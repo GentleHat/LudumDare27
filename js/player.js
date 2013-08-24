@@ -6,6 +6,7 @@ function Player() {
 	entities.push(this);
 	this.x = 0;
 	this.y = 0;
+	this.selection = null;
 }
 
 Player.prototype.update = function() {
@@ -26,4 +27,13 @@ Player.prototype.render = function() {
 
 	if (screen.xOffset > 0) screen.xOffset = 0;
 	if (screen.yOffset > 0) screen.yOffset = 0;
+};
+
+Player.prototype.click = function(x,y) {
+	x = x - (x % 32);
+	y = y - (y % 32);
+	if (this.selection !== null) {
+		new Tower(this.selection, x,y);
+	}
+	this.selection = null;
 };

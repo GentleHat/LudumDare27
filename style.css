@@ -14,8 +14,25 @@ body {
 canvas {
 	position: relative;
 	width:576px;
-	height:600px;
+	height:448px;
 	image-rendering: optimizeSpeed;
 }
 
+#shop {
+	height: 152;
+	width: 576;
+	background-color: #000;
+}
 
+.tower {
+	width: 50px;
+	height: 50px;
+	padding: 10px;
+	background: #333;
+	text-align: center;
+	border: 2px inset #666;
+}
+
+.towerselected{
+	background:#999 !important;
+}

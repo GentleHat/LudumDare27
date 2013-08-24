@@ -197,7 +197,7 @@ var screen = null;
 $(window).load(function() {
 	canvas = document.getElementById('canvas');
 	canvas.width = 576;
-	canvas.height = 600;
+	canvas.height = 448;
 	//check whether browser supports getting canvas context
 	if (canvas && canvas.getContext) {
 		ctx = canvas.getContext('2d');
@@ -399,7 +399,7 @@ function rightClick(e) {
 
 //Mouse clicks hook
 $("#canvas").click(function(e){
-	
+	player.click(mouse.x,mouse.y);
 });
 
 //level.js
@@ -431,7 +431,7 @@ function Level(num) {
 		{
 			for (var y=0;y<this.height;y++) {
 				switch(tmxloader.map.layers[1].data[y][x] - 32) {
-					case 1: new Base(x*32,y*32); break; //Code to execute for tile 1, etc
+					case 1: new Node(1,x*32,y*32); break;
 				}
 			}
 		}
@@ -494,7 +494,13 @@ function fadeOutLevel() {
 Level.prototype.drawOverlay = function() {
 	ctx.fillStyle = "rgba(0, 0, 0, "+this.overlayAlpha+")";
 	ctx.fillRect(0,0,600,450);
-};//player.js
+};
+function Node(id, x, y) {
+	this.id = id;
+	this.x = x;
+	this.y = y;
+	level.nodes.push(this);
+}//player.js
 
 var player = new Player();
 
@@ -502,6 +508,7 @@ function Player() {
 	entities.push(this);
 	this.x = 0;
 	this.y = 0;
+	this.selection = null;
 }
 
 Player.prototype.update = function() {
@@ -522,6 +529,15 @@ Player.prototype.render = function() {
 
 	if (screen.xOffset > 0) screen.xOffset = 0;
 	if (screen.yOffset > 0) screen.yOffset = 0;
+};
+
+Player.prototype.click = function(x,y) {
+	x = x - (x % 32);
+	y = y - (y % 32);
+	if (this.selection !== null) {
+		new Tower(this.selection, x,y);
+	}
+	this.selection = null;
 };//point.js
 
 function Point(x,y) {
@@ -585,6 +601,17 @@ Screen.prototype.setOffset = function(x,y) {
 	if (y > 0) y = 0;
 	this.xOffset = x;
 	this.yOffset = y;
+};
+$("#shop").append("<div class='tower'><img class='watertower' src='images/water.png'></div>");
+
+
+$('.watertower').click(function() {
+	player.selection = 'water';
+});
+
+var watertower = {
+	'name': 'Water Tower',
+	'cost': 100
 };//Using audiofx.min.js
 
 if (AudioFX.supported) {
@@ -812,7 +839,7 @@ tmxloader.load = function(url){
 		 
 }	
 
-function Tower(x,y) {
+function Tower(type, x,y) {
 	this.x = x;
 	this.y = y;
 	this.type = "";
@@ -831,7 +858,7 @@ Tower.prototype.render = function() {
 };
 
 Tower.prototype.update = function() {
-	if (getCurrentMs() > lastFire + this.fireRate()) {
+	if (getCurrentMs() > this.lastFire + getCurrentMs()) {
 
 		this.lastFire = getCurrentMs();
 	}

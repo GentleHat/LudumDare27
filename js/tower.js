@@ -1,5 +1,5 @@
 
-function Tower(x,y) {
+function Tower(type, x,y) {
 	this.x = x;
 	this.y = y;
 	this.type = "";
@@ -18,7 +18,7 @@ Tower.prototype.render = function() {
 };
 
 Tower.prototype.update = function() {
-	if (getCurrentMs() > lastFire + this.fireRate()) {
+	if (getCurrentMs() > this.lastFire + getCurrentMs()) {
 
 		this.lastFire = getCurrentMs();
 	}

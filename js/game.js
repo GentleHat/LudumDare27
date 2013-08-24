@@ -17,7 +17,7 @@ var screen = null;
 $(window).load(function() {
 	canvas = document.getElementById('canvas');
 	canvas.width = 576;
-	canvas.height = 600;
+	canvas.height = 448;
 	//check whether browser supports getting canvas context
 	if (canvas && canvas.getContext) {
 		ctx = canvas.getContext('2d');

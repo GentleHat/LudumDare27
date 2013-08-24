@@ -27,7 +27,7 @@ function Level(num) {
 		{
 			for (var y=0;y<this.height;y++) {
 				switch(tmxloader.map.layers[1].data[y][x] - 32) {
-					case 1: new Base(x*32,y*32); break; //Code to execute for tile 1, etc
+					case 1: new Node(1,x*32,y*32); break;
 				}
 			}
 		}

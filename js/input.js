@@ -82,6 +82,6 @@ function rightClick(e) {
 
 //Mouse clicks hook
 $("#canvas").click(function(e){
-	
+	player.click(mouse.x,mouse.y);
 });
 
