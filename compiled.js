@@ -31,6 +31,7 @@ function BoundingBox(x,y,width,height) {
 BoundingBox.prototype.update = function(x,y) {
 	this.x = x;
 	this.y = y;
+	//ctx.fillRect(this.x,this.y,this.width,this.height);
 };
 
 BoundingBox.prototype.setWidth = function(width) {
@@ -98,7 +99,7 @@ function Enemy(x,y) {
 	this.rotation = 0;
 	this.img = new Image();
 	this.img.src = "images/spider2.png";
-	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
+	this.boundingBox = new BoundingBox(this.x,this.y,this.width/2,this.height/2);
 	this.target = new Point(this.x,this.y);
 	this.speed = 1;
 	this.currentNode = 1;
@@ -138,7 +139,7 @@ Enemy.prototype.update = function() {
 	}
 	this.xv = 0;
 	this.yv = 0;
-	this.boundingBox.update(this.x,this.y);
+	this.boundingBox.update(this.x-(this.width/4),this.y-(this.height/4));
 	if (this.target !== null) {
 		var dirx = (this.target.x - this.x);
 		var diry =  (this.target.y - this.y);
@@ -157,6 +158,13 @@ Enemy.prototype.update = function() {
 };
 
 Enemy.prototype.kill = function() {
+	for (var i=0;i<entities.length;i++) {
+		if (entities[i] instanceof Projectile) {
+			if (entities[i].target == this) {
+				entities[i].target = new Point(this.x,this.y);
+			}
+		}
+	}
 	entities.clean(this);
 };
 
@@ -313,6 +321,7 @@ function draw() {
 			if (game.inGame) entities[i].update();
 		}
 	}
+	renderParticles();
     player.render();
     game.level.drawOverlay();
     ui.draw();
@@ -527,7 +536,74 @@ function Node(id, x, y) {
 	this.id = id;
 	this.x = x;
 	this.y = y;
-}//player.js
+}
+var particles = [];
+
+function Particle(x,y,r,g,b,angle,speed,friction,alpha,decay,lifetime) {
+	this.x = x;
+	this.y = y;
+	this.lifeTime = lifetime;
+	this.timeAlive = 0;
+	this.r = r;
+	this.g = g;
+	this.b = b;
+	this.coordinates = [];
+	this.coordinateCount = 10;
+	this.angle = angle;
+	this.speed = speed;
+	this.friction = friction;
+	this.alpha = alpha;
+	this.decay = decay;
+	while (this.coordinateCount--) {
+		this.coordinates.push([this.x,this.y]);
+	}
+	particles.push(this);
+}
+
+Particle.prototype.render = function() {
+	//ctx.beginPath();
+	// move to the last tracked coordinates in the set, then draw a line to the current x and y
+	ctx.moveTo( this.coordinates[ this.coordinates.length - 1 ][ 0 ], this.coordinates[ this.coordinates.length - 1 ][ 1 ] );
+	ctx.lineTo( this.x+screen.xOffset, this.y+screen.yOffset );
+	ctx.fillStyle = 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + this.alpha + ');';
+
+	ctx.beginPath();
+	ctx.arc(this.x+screen.xOffset,this.y+screen.yOffset, 9, 0, 2 * Math.PI, false);
+	//ctx.fillRect(this.x+screen.xOffset,this.y+screen.yOffset, 1,1);
+	ctx.fill();
+};
+
+Particle.prototype.update = function() {
+	this.coordinates.pop();
+	this.coordinates.unshift( [ this.x, this.y ] );
+	this.x += Math.cos( this.angle ) * this.speed;
+	this.y += Math.sin( this.angle ) * this.speed;
+	this.alpha *= this.decay;
+	this.speed *= this.friction;
+	this.timeAlive++;
+	if (this.timeAlive >= this.lifeTime) {
+		deleteParticle(this);
+	}
+};
+
+function createWaterParticles(x,y) {
+	var particleCount = randomInt(5,15);
+	while( particleCount-- ) {
+		particles.push( new Particle( x,y,0,180,200,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 ) );
+	}
+}
+
+function renderParticles() {
+	for (var i=0;i<particles.length;i++) {
+		particles[i].render();
+		particles[i].update();
+	}
+}
+
+function deleteParticle(p) {
+	particles.clean(p);
+}
+//player.js
 
 var player = new Player();
 
@@ -548,7 +624,6 @@ Player.prototype.render = function() {
 	var x = mouse.x - (mouse.x % 32);
 	var y = mouse.y - (mouse.y % 32);
 	ctx.strokeRect(x, y, 32, 32);
-	ctx.stroke();
 
 	//Ignore this code, for screen scrolling games
 	if (player.x > 300 && player.x + 300 < screen.maxXOffset * -1) screen.xOffset = -(player.x-300);
@@ -598,8 +673,8 @@ function Projectile(type,x,y,target) {
 	this.y = y;
 	this.xv = 0;
 	this.yv = 0;
-	this.width = 32;
-	this.height = 32;
+	this.width = 16;
+	this.height = 25;
 	this.target = target;
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
 	this.img = new Image();
@@ -629,14 +704,16 @@ Projectile.prototype.update = function() {
 			if (this.boundingBox.isColliding(entities[i])) {
 				entities[i].takeDamage(this.power);
 				this.kill();
+				createWaterParticles(this.x,this.y);
 			}
 		}
 	}
 
-	this.boundingBox.update(this.x,this.y);
-	if (this.target === null) return;
+	this.boundingBox.update(this.x-(this.width/2),this.y-(this.height/2));
+	if (this.target === null) {
+		this.kill();
+	}
 	if (this.target instanceof Enemy) { //Guided
-
 		var dirx = (this.target.x - this.x);
 		var diry =  (this.target.y - this.y);
 
@@ -649,7 +726,7 @@ Projectile.prototype.update = function() {
 			//this.target = null;
 		}
 	}
-	else {
+	else if (this.target instanceof Point) {
 		var dirx = (this.target.x - this.x);
 		var diry =  (this.target.y - this.y);
 
@@ -658,9 +735,12 @@ Projectile.prototype.update = function() {
 		diry /= hyp;
 		this.xv = dirx * this.speed;
 		this.yv = diry * this.speed;
-		if (hyp < 35) {
-			//this.target = null;
+		if (hyp < 15) {
+			this.target = null;
 		}
+	}
+	else {
+		this.kill();
 	}
 	this.x += this.xv;
 	this.y += this.yv;
@@ -668,7 +748,7 @@ Projectile.prototype.update = function() {
 
 Projectile.prototype.kill = function() {
 	entities.clean(this);
-}
+};
 function Screen() {
 	this.xOffset = 0;
 	this.yOffset = 0;
@@ -957,6 +1037,7 @@ function Tower(type, x,y) {
 	this.fireRate = 0.5;
 	this.lastFire = 0;
 	this.target = null;
+	this.range = 300;
 	this.img = new Image();
 	this.img.src = "";
 	entities.push(this);
@@ -973,14 +1054,18 @@ Tower.prototype.update = function() {
 		var closestEnemy = null;
 		for (var i=0;i<entities.length;i++) {
 			if (entities[i] instanceof Enemy) {
-				if (closestEnemy === null) closestEnemy = entities[i];
-				else if (new Point(this.x,this.y).getDist(new Point(entities[i].x,entities[i].y)) < new Point(this.x,this.y).getDist(new Point(closestEnemy.x,closestEnemy.y))) {
-					closestEnemy = entities[i];
+				closestEnemy = { x:9999,y:99999};
+				if (new Point(this.x,this.y).getDist(new Point(entities[i].x,entities[i].y)) < new Point(this.x,this.y).getDist(new Point(closestEnemy.x,closestEnemy.y))) {
+					if (new Point(this.x,this.y).getDist(new Point(entities[i].x,entities[i].y)) < this.range) {
+						closestEnemy = entities[i];
+					}
 				}
 			}
 		}
-		new Projectile('water',this.x,this.y,closestEnemy);
-		this.lastFire = getCurrentMs();
+		if (closestEnemy instanceof Enemy) {
+			new Projectile('water',this.x,this.y,closestEnemy);
+			this.lastFire = getCurrentMs();
+		}
 	}
 };var ui = new UI();
 

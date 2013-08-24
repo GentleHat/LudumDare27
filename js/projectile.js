@@ -5,8 +5,8 @@ function Projectile(type,x,y,target) {
 	this.y = y;
 	this.xv = 0;
 	this.yv = 0;
-	this.width = 32;
-	this.height = 32;
+	this.width = 16;
+	this.height = 25;
 	this.target = target;
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
 	this.img = new Image();
@@ -36,14 +36,16 @@ Projectile.prototype.update = function() {
 			if (this.boundingBox.isColliding(entities[i])) {
 				entities[i].takeDamage(this.power);
 				this.kill();
+				createWaterParticles(this.x,this.y);
 			}
 		}
 	}
 
-	this.boundingBox.update(this.x,this.y);
-	if (this.target === null) return;
+	this.boundingBox.update(this.x-(this.width/2),this.y-(this.height/2));
+	if (this.target === null) {
+		this.kill();
+	}
 	if (this.target instanceof Enemy) { //Guided
-
 		var dirx = (this.target.x - this.x);
 		var diry =  (this.target.y - this.y);
 
@@ -56,7 +58,7 @@ Projectile.prototype.update = function() {
 			//this.target = null;
 		}
 	}
-	else {
+	else if (this.target instanceof Point) {
 		var dirx = (this.target.x - this.x);
 		var diry =  (this.target.y - this.y);
 
@@ -65,9 +67,12 @@ Projectile.prototype.update = function() {
 		diry /= hyp;
 		this.xv = dirx * this.speed;
 		this.yv = diry * this.speed;
-		if (hyp < 35) {
-			//this.target = null;
+		if (hyp < 15) {
+			this.target = null;
 		}
+	}
+	else {
+		this.kill();
 	}
 	this.x += this.xv;
 	this.y += this.yv;
@@ -75,4 +80,4 @@ Projectile.prototype.update = function() {
 
 Projectile.prototype.kill = function() {
 	entities.clean(this);
-}
+};

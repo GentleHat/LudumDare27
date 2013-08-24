@@ -8,7 +8,7 @@ function Enemy(x,y) {
 	this.rotation = 0;
 	this.img = new Image();
 	this.img.src = "images/spider2.png";
-	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
+	this.boundingBox = new BoundingBox(this.x,this.y,this.width/2,this.height/2);
 	this.target = new Point(this.x,this.y);
 	this.speed = 1;
 	this.currentNode = 1;
@@ -48,7 +48,7 @@ Enemy.prototype.update = function() {
 	}
 	this.xv = 0;
 	this.yv = 0;
-	this.boundingBox.update(this.x,this.y);
+	this.boundingBox.update(this.x-(this.width/4),this.y-(this.height/4));
 	if (this.target !== null) {
 		var dirx = (this.target.x - this.x);
 		var diry =  (this.target.y - this.y);
@@ -67,6 +67,13 @@ Enemy.prototype.update = function() {
 };
 
 Enemy.prototype.kill = function() {
+	for (var i=0;i<entities.length;i++) {
+		if (entities[i] instanceof Projectile) {
+			if (entities[i].target == this) {
+				entities[i].target = new Point(this.x,this.y);
+			}
+		}
+	}
 	entities.clean(this);
 };
 

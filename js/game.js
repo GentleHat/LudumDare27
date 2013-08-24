@@ -105,6 +105,7 @@ function draw() {
 			if (game.inGame) entities[i].update();
 		}
 	}
+	renderParticles();
     player.render();
     game.level.drawOverlay();
     ui.draw();

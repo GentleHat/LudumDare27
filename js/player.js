@@ -19,7 +19,6 @@ Player.prototype.render = function() {
 	var x = mouse.x - (mouse.x % 32);
 	var y = mouse.y - (mouse.y % 32);
 	ctx.strokeRect(x, y, 32, 32);
-	ctx.stroke();
 
 	//Ignore this code, for screen scrolling games
 	if (player.x > 300 && player.x + 300 < screen.maxXOffset * -1) screen.xOffset = -(player.x-300);

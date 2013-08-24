@@ -10,6 +10,7 @@ function BoundingBox(x,y,width,height) {
 BoundingBox.prototype.update = function(x,y) {
 	this.x = x;
 	this.y = y;
+	//ctx.fillRect(this.x,this.y,this.width,this.height);
 };
 
 BoundingBox.prototype.setWidth = function(width) {

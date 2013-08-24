@@ -6,6 +6,7 @@ function Tower(type, x,y) {
 	this.fireRate = 0.5;
 	this.lastFire = 0;
 	this.target = null;
+	this.range = 300;
 	this.img = new Image();
 	this.img.src = "";
 	entities.push(this);
@@ -22,13 +23,17 @@ Tower.prototype.update = function() {
 		var closestEnemy = null;
 		for (var i=0;i<entities.length;i++) {
 			if (entities[i] instanceof Enemy) {
-				if (closestEnemy === null) closestEnemy = entities[i];
-				else if (new Point(this.x,this.y).getDist(new Point(entities[i].x,entities[i].y)) < new Point(this.x,this.y).getDist(new Point(closestEnemy.x,closestEnemy.y))) {
-					closestEnemy = entities[i];
+				closestEnemy = { x:9999,y:99999};
+				if (new Point(this.x,this.y).getDist(new Point(entities[i].x,entities[i].y)) < new Point(this.x,this.y).getDist(new Point(closestEnemy.x,closestEnemy.y))) {
+					if (new Point(this.x,this.y).getDist(new Point(entities[i].x,entities[i].y)) < this.range) {
+						closestEnemy = entities[i];
+					}
 				}
 			}
 		}
-		new Projectile('water',this.x,this.y,closestEnemy);
-		this.lastFire = getCurrentMs();
+		if (closestEnemy instanceof Enemy) {
+			new Projectile('water',this.x,this.y,closestEnemy);
+			this.lastFire = getCurrentMs();
+		}
 	}
 };
