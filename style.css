@@ -33,6 +33,6 @@ canvas {
 	border: 2px inset #666;
 }
 
-.towerselected{
+.tower:active{
 	background:#999 !important;
 }

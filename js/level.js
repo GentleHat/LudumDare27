@@ -14,6 +14,7 @@ function Level(num) {
 	this.overlayAlpha = 0;
 	this.fadeStep = 0;
 	this.isFading = false;
+	this.nodes = [];
 
 	for (var x=0;x<this.width;x++)
 	{
@@ -27,7 +28,11 @@ function Level(num) {
 		{
 			for (var y=0;y<this.height;y++) {
 				switch(tmxloader.map.layers[1].data[y][x] - 32) {
-					case 1: new Node(1,x*32,y*32); break;
+					case 1: this.nodes[1] = new Node(1, x*32,y*32); break;
+					case 2: this.nodes[2] = new Node(2, x*32,y*32); break;
+					case 3: this.nodes[3] = new Node(3, x*32,y*32); break;
+					case 4: this.nodes[4] = new Node(4, x*32,y*32); break;
+					case 5: this.nodes[5] = new Node(5, x*32,y*32); break;
 				}
 			}
 		}

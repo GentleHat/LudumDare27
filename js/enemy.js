@@ -11,6 +11,7 @@ function Enemy(x,y) {
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
 	this.target = new Point(randomInt(0,500),randomInt(0,500));
 	this.speed = 1;
+	this.currentNode = 1;
 	this.xv = 0;
 	this.yv = 0;
 	this.scale = 1;
@@ -35,6 +36,14 @@ Enemy.prototype.render = function() {
 };
 
 Enemy.prototype.update = function() {
+	var distToNode = new Point(this.x,this.y).getDist(new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y));
+	if (distToNode > 40) {
+		this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
+	} else {
+		if (game.level.nodes[this.currentNode+1] !== undefined) {
+			this.currentNode++;
+		}
+	}
 	this.xv = 0;
 	this.yv = 0;
 	this.boundingBox.update(this.x,this.y);

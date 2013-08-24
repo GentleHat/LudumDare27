@@ -2,7 +2,7 @@
 $("#shop").append("<div class='tower'><img class='watertower' src='images/water.png'></div>");
 
 
-$('.watertower').click(function() {
+$('.tower').click(function() {
 	player.selection = 'water';
 });
 
