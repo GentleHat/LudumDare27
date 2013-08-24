@@ -3,7 +3,7 @@ function Tower(type, x,y) {
 	this.x = x+16;
 	this.y = y+16;
 	this.type = type;
-	this.fireRate = 0.5;
+	this.fireRate = type.rate;
 	this.lastFire = 0;
 	this.target = null;
 	this.range = 125;

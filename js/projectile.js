@@ -13,7 +13,7 @@ function Projectile(type,x,y,target) {
 	this.img.src = "images/" + type.name + ".png";
 	this.scale = 1;
 	this.speed = type.speed;
-	this.power = 10;
+	this.power = type.power;
 	this.layer = 2;
 	entities.push(this);
 }

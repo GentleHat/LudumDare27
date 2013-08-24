@@ -100,7 +100,7 @@ function Enemy(x,y) {
 	this.img = new Image();
 	this.img.src = "images/spider2.png";
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width/2,this.height/2);
-	this.target = new Point(this.x,this.y);
+	this.target = null;
 	this.speed = 1;
 	this.currentNode = 1;
 	this.xv = 0;
@@ -128,14 +128,15 @@ Enemy.prototype.render = function() {
 };
 
 Enemy.prototype.update = function() {
-
+	if (this.target === null) this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
 	var distToNode = new Point(this.x,this.y).getDist(new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y));
-	if (distToNode > 5) {
-		this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
-	} else {
+	if (distToNode < 20) {
+		//this.target = new Point(game.level.nodes[this.currentNode].x+randomInt(-50,50),game.level.nodes[this.currentNode].y+randomInt(-50,50));
+		
 		if (game.level.nodes[this.currentNode+1] !== undefined) {
 			this.currentNode++;
 		}
+		this.target = null;
 	}
 	this.xv = 0;
 	this.yv = 0;
@@ -150,7 +151,7 @@ Enemy.prototype.update = function() {
 		this.xv = dirx * this.speed;
 		this.yv = diry * this.speed;
 		if (hyp < 35) {
-			this.target = null;
+			//this.target = null;
 		}
 	}
 	this.x += this.xv;
@@ -177,6 +178,7 @@ function EnemySpawn(x,y) {
 	this.y = y;
 	this.lastSpawn = 0;
 	this.spawnRate = 1;
+	this.toSpawn = 10;
 	entities.push(this);
 }
 
@@ -186,8 +188,11 @@ EnemySpawn.prototype.render = function() {
 
 EnemySpawn.prototype.update = function() {
 	if ((this.lastSpawn - getCurrentMs()) < -this.spawnRate) {
-		new Enemy(this.x,this.y);
-		this.lastSpawn = getCurrentMs();
+		if (this.toSpawn > 0) {
+			new Enemy(this.x,this.y);
+			this.lastSpawn = getCurrentMs();
+			this.toSpawn--;
+		}
 	}
 };Function.prototype.inherit = function(parent) {
   this.prototype = Object.create(parent.prototype);
@@ -499,7 +504,7 @@ function Level(num) {
 				var id = tmxloader.map.layers[1].data[y][x] - 32;
 				if (id <= 8) this.nodes[id] = new Node(id,x*32,y*32);
 				else if (id == 9) new EnemySpawn(x*32+16,y*32-16);
-				else if (id == 10) new EnemySpawn(x*32+32, y*32+16);
+				else if (id == 10) new EnemySpawn(x*32+48, y*32+16);
 				else if (id == 11) new EnemySpawn(x*32+16, y*32+48);
 				else if (id == 12) new EnemySpawn(x*32-16,y*32+16);
 			}
@@ -645,6 +650,11 @@ function Player() {
 	this.selection = null;
 	this.lives = 20;
 	this.money = 400;
+	this.spidersKilled = 0;
+	this.spidersAlive = 0;
+	this.wave = 1;
+	this.waveTime = 10;
+	this.totalTime = 0;
 }
 
 Player.prototype.update = function() {
@@ -714,7 +724,7 @@ function Projectile(type,x,y,target) {
 	this.img.src = "images/" + type.name + ".png";
 	this.scale = 1;
 	this.speed = type.speed;
-	this.power = 10;
+	this.power = type.power;
 	this.layer = 2;
 	entities.push(this);
 }
@@ -828,9 +838,11 @@ Screen.prototype.setOffset = function(x,y) {
 	this.yOffset = y;
 };var shop = new Shop();
 
-function Shop() {
 
+function Shop() {
+	
 }
+
 
 $(window).load(function() {
 	for (var i=0;i<towers.length;i++) {
@@ -845,11 +857,19 @@ $(window).load(function() {
 			}
 		}
 	});
+	$("#shop").append("<div id='scoreboard'></div>");
 });
 
 Shop.prototype.buyTower = function(type,x,y) {
-	player.money -= 10;
-	new Tower(type, x, y);
+	if (player.money >= type.cost) {
+		player.money -= type.cost;
+		new Tower(type, x, y);
+	}
+	this.updateScore();
+};
+
+Shop.prototype.updateScore = function() {
+	$("#scoreboard").text("Money: $"+player.money);
 };
 
 var towers = [
@@ -858,17 +878,24 @@ var towers = [
 		'name': 'water',
 		'cost': 100,
 		'speed': 2,
-		'rate': 0.8
+		'rate': 0.8,
+		'power':15
 	},
 	{
 		'fullName': "Newspaper Tower",
 		'name': 'newspaper',
-		'cost': 50
+		'cost': 50,
+		'speed':1.5,
+		'rate':1.2,
+		'power':30
 	},
 	{
 		'fullName': "Shoe Tower",
 		'name': 'shoe',
-		'cost': 200
+		'cost': 200,
+		'speed':1,
+		'rate':2,
+		'power':80
 	}
 ];
 //Using audiofx.min.js
@@ -1102,7 +1129,7 @@ function Tower(type, x,y) {
 	this.x = x+16;
 	this.y = y+16;
 	this.type = type;
-	this.fireRate = 0.5;
+	this.fireRate = type.rate;
 	this.lastFire = 0;
 	this.target = null;
 	this.range = 125;

@@ -9,7 +9,7 @@ function Enemy(x,y) {
 	this.img = new Image();
 	this.img.src = "images/spider2.png";
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width/2,this.height/2);
-	this.target = new Point(this.x,this.y);
+	this.target = null;
 	this.speed = 1;
 	this.currentNode = 1;
 	this.xv = 0;
@@ -37,14 +37,15 @@ Enemy.prototype.render = function() {
 };
 
 Enemy.prototype.update = function() {
-
+	if (this.target === null) this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
 	var distToNode = new Point(this.x,this.y).getDist(new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y));
-	if (distToNode > 5) {
-		this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
-	} else {
+	if (distToNode < 20) {
+		//this.target = new Point(game.level.nodes[this.currentNode].x+randomInt(-50,50),game.level.nodes[this.currentNode].y+randomInt(-50,50));
+		
 		if (game.level.nodes[this.currentNode+1] !== undefined) {
 			this.currentNode++;
 		}
+		this.target = null;
 	}
 	this.xv = 0;
 	this.yv = 0;
@@ -59,7 +60,7 @@ Enemy.prototype.update = function() {
 		this.xv = dirx * this.speed;
 		this.yv = diry * this.speed;
 		if (hyp < 35) {
-			this.target = null;
+			//this.target = null;
 		}
 	}
 	this.x += this.xv;

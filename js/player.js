@@ -8,6 +8,11 @@ function Player() {
 	this.selection = null;
 	this.lives = 20;
 	this.money = 400;
+	this.spidersKilled = 0;
+	this.spidersAlive = 0;
+	this.wave = 1;
+	this.waveTime = 10;
+	this.totalTime = 0;
 }
 
 Player.prototype.update = function() {

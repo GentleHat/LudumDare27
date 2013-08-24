@@ -1,8 +1,10 @@
 var shop = new Shop();
 
-function Shop() {
 
+function Shop() {
+	
 }
+
 
 $(window).load(function() {
 	for (var i=0;i<towers.length;i++) {
@@ -17,11 +19,19 @@ $(window).load(function() {
 			}
 		}
 	});
+	$("#shop").append("<div id='scoreboard'></div>");
 });
 
 Shop.prototype.buyTower = function(type,x,y) {
-	player.money -= 10;
-	new Tower(type, x, y);
+	if (player.money >= type.cost) {
+		player.money -= type.cost;
+		new Tower(type, x, y);
+	}
+	this.updateScore();
+};
+
+Shop.prototype.updateScore = function() {
+	$("#scoreboard").text("Money: $"+player.money);
 };
 
 var towers = [
@@ -30,16 +40,23 @@ var towers = [
 		'name': 'water',
 		'cost': 100,
 		'speed': 2,
-		'rate': 0.8
+		'rate': 0.8,
+		'power':15
 	},
 	{
 		'fullName': "Newspaper Tower",
 		'name': 'newspaper',
-		'cost': 50
+		'cost': 50,
+		'speed':1.5,
+		'rate':1.2,
+		'power':30
 	},
 	{
 		'fullName': "Shoe Tower",
 		'name': 'shoe',
-		'cost': 200
+		'cost': 200,
+		'speed':1,
+		'rate':2,
+		'power':80
 	}
 ];

@@ -4,6 +4,7 @@ function EnemySpawn(x,y) {
 	this.y = y;
 	this.lastSpawn = 0;
 	this.spawnRate = 1;
+	this.toSpawn = 10;
 	entities.push(this);
 }
 
@@ -13,7 +14,10 @@ EnemySpawn.prototype.render = function() {
 
 EnemySpawn.prototype.update = function() {
 	if ((this.lastSpawn - getCurrentMs()) < -this.spawnRate) {
-		new Enemy(this.x,this.y);
-		this.lastSpawn = getCurrentMs();
+		if (this.toSpawn > 0) {
+			new Enemy(this.x,this.y);
+			this.lastSpawn = getCurrentMs();
+			this.toSpawn--;
+		}
 	}
 };
