@@ -18,14 +18,11 @@ Tile.prototype.setColor = function(color) {
 };
 
 Tile.prototype.render = function() {
-	if (new Point(this.x,this.y).getDist(new Point(player.x,player.y)) < 450) {
-
-		var xOffset = ((this.id - 1) % 4) * 32;
-		var yOffset = Math.floor(((this.id - 1) / 4)) * 32;
-		ctx.fillStyle = this.color;
-		ctx.fillRect(this.x+screen.xOffset,this.y+screen.yOffset,32,32);
-		ctx.drawImage(tileSheet,xOffset,yOffset,32,32,this.x+screen.xOffset,this.y+screen.yOffset,32,32);
-	}
+	var xOffset = ((this.id - 1) % 8) * 32;
+	var yOffset = Math.floor(((this.id - 1) / 8)) * 32;
+	ctx.fillStyle = this.color;
+	ctx.fillRect(this.x+screen.xOffset,this.y+screen.yOffset,32,32);
+	ctx.drawImage(tileSheet,xOffset,yOffset,32,32,this.x+screen.xOffset,this.y+screen.yOffset,32,32);
 };
 
 function isSolidTile(x,y) {

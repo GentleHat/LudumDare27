@@ -22,12 +22,13 @@ function Level(num) {
 			this.tiles[x][y] = new Tile(x*32,y*32,tmxloader.map.layers[0].data[y][x]);
 		}
 	}
-
-	for (var x=0;x<this.width;x++)
-	{
-		for (var y=0;y<this.height;y++) {
-			switch(tmxloader.map.layers[1].data[y][x] - 32) {
-				case 1: break; //Code to execute for tile 1, etc
+	if (tmxloader.map.layers[1] !== undefined) {
+		for (var x=0;x<this.width;x++)
+		{
+			for (var y=0;y<this.height;y++) {
+				switch(tmxloader.map.layers[1].data[y][x] - 32) {
+					case 1: new Base(x*32,y*32); break; //Code to execute for tile 1, etc
+				}
 			}
 		}
 	}

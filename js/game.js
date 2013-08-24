@@ -16,8 +16,8 @@ var screen = null;
 //HTML onLoad event - Loading the game
 $(window).load(function() {
 	canvas = document.getElementById('canvas');
-	canvas.width = 600;
-	canvas.height = 450;
+	canvas.width = 576;
+	canvas.height = 600;
 	//check whether browser supports getting canvas context
 	if (canvas && canvas.getContext) {
 		ctx = canvas.getContext('2d');
@@ -37,7 +37,9 @@ function Game() {
 Game.prototype.start = function() {
 	this.level = new Level(this.currentLevel);
 	this.level.fadeIn();
+	this.inGame = true;
 	screen = new Screen();
+	new Enemy(90,90);
 };
 Game.prototype.end = function() {
 	this.level = null;

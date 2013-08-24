@@ -1,4 +1,17 @@
-AudioFX=function(){var f="0.4.0";var c=false,e=document.createElement("audio"),a=function(j){var i=e.canPlayType(j);return(i==="probably")||(i==="maybe")};if(e&&e.canPlayType){c={ogg:a('audio/ogg; codecs="vorbis"'),mp3:a("audio/mpeg;"),m4a:a("audio/x-m4a;")||a("audio/aac;"),wav:a('audio/wav; codecs="1"'),loop:(typeof e.loop==="boolean")}}var d=function(m,i,l){var k=document.createElement("audio");if(l){var j=function(){k.removeEventListener("canplay",j,false);l()};k.addEventListener("canplay",j,false)}if(i.loop&&!c.loop){k.addEventListener("ended",function(){k.currentTime=0;k.play()},false)}k.volume=i.volume||0.1;k.autoplay=i.autoplay;k.loop=i.loop;k.src=m;return k};var h=function(i){for(var j=0;j<i.length;j++){if(c&&c[i[j]]){return i[j]}}};var g=function(i){var k,j;for(k=0;k<i.length;k++){j=i[k];if(j.paused||j.ended){return j}}};var b=function(o,j,m){j=j||{};var i=j.formats||[],l=h(i),k=[];o=o+(l?"."+l:"");if(c){for(var p=0;p<(j.pool||1);p++){k.push(d(o,j,p==0?m:null))}}else{m()}return{audio:(k.length==1?k[0]:k),play:function(){var n=g(k);if(n){n.play()}},stop:function(){var r,q;for(r=0;r<k.length;r++){q=k[r];q.pause();q.currentTime=0}}}};b.version=f;b.supported=c;return b}();//boundingbox.js
+AudioFX=function(){var f="0.4.0";var c=false,e=document.createElement("audio"),a=function(j){var i=e.canPlayType(j);return(i==="probably")||(i==="maybe")};if(e&&e.canPlayType){c={ogg:a('audio/ogg; codecs="vorbis"'),mp3:a("audio/mpeg;"),m4a:a("audio/x-m4a;")||a("audio/aac;"),wav:a('audio/wav; codecs="1"'),loop:(typeof e.loop==="boolean")}}var d=function(m,i,l){var k=document.createElement("audio");if(l){var j=function(){k.removeEventListener("canplay",j,false);l()};k.addEventListener("canplay",j,false)}if(i.loop&&!c.loop){k.addEventListener("ended",function(){k.currentTime=0;k.play()},false)}k.volume=i.volume||0.1;k.autoplay=i.autoplay;k.loop=i.loop;k.src=m;return k};var h=function(i){for(var j=0;j<i.length;j++){if(c&&c[i[j]]){return i[j]}}};var g=function(i){var k,j;for(k=0;k<i.length;k++){j=i[k];if(j.paused||j.ended){return j}}};var b=function(o,j,m){j=j||{};var i=j.formats||[],l=h(i),k=[];o=o+(l?"."+l:"");if(c){for(var p=0;p<(j.pool||1);p++){k.push(d(o,j,p==0?m:null))}}else{m()}return{audio:(k.length==1?k[0]:k),play:function(){var n=g(k);if(n){n.play()}},stop:function(){var r,q;for(r=0;r<k.length;r++){q=k[r];q.pause();q.currentTime=0}}}};b.version=f;b.supported=c;return b}();function Base(x,y) {
+	this.x = x;
+	this.y = y;
+	this.boundingBox = new BoundingBox(this.x,this.y,32,32);
+	entities.push(this);
+}
+
+Base.prototype.render = function() {
+	
+};
+
+Base.prototype.update = function() {
+	//Check if colliding with any mobs
+};//boundingbox.js
 
 function BoundingBox(x,y,width,height) {
 	this.x = x;
@@ -67,6 +80,59 @@ BoundingBox.prototype.destroy = function() {
 	this.y = 0;
 	this.width = 0;
 	this.height = 0;
+};
+function Enemy(x,y) {
+	this.x = x;
+	this.y = y;
+	this.width = 32;
+	this.height = 32;
+	this.type = "spider";
+	this.rotation = 0;
+	this.img = new Image();
+	this.img.src = "images/spider.png";
+	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
+	this.target = new Point(222,222);
+	this.speed = 1;
+	this.xv = 0;
+	this.yv = 0;
+	this.scale = 1;
+	entities.push(this);
+}
+
+Enemy.prototype.render = function() {
+	if (this.target !== null) {
+		this.rotation = Math.atan2(this.y+screen.yOffset-(this.height/2)-this.target.y+screen.yOffset,this.x+screen.xOffset-(this.width/2)-this.target.x+screen.xOffset)*(180 / Math.PI);
+		if(this.rotation < 0) { this.rotation += 360;}
+		this.rotation -= 270;
+	}
+	ctx.save();
+	ctx.translate(this.x+screen.xOffset,this.y+screen.yOffset);
+	ctx.rotate(degToRad(this.rotation));
+	ctx.drawImage(this.img, (-(this.img.width/2)), (-(this.img.height/2)), this.img.width*this.scale,this.img.height*this.scale);
+	ctx.restore();
+	ctx.fillStyle = "#F00";
+	ctx.fillRect(this.x,this.y,5,5);
+};
+
+Enemy.prototype.update = function() {
+	this.xv = 0;
+	this.yv = 0;
+	this.boundingBox.update(this.x,this.y);
+	if (this.target !== null) {
+		var dirx = (this.target.x - this.x);
+		var diry =  (this.target.y - this.y);
+
+		var hyp = Math.sqrt(dirx*dirx + diry*diry);
+		dirx /= hyp;
+		diry /= hyp;
+		this.xv = dirx * this.speed;
+		this.yv = diry * this.speed;
+		if (hyp < 5) {
+			this.target = null;
+		}
+	}
+	this.x += this.xv;
+	this.y += this.yv;
 };Function.prototype.inherit = function(parent) {
   this.prototype = Object.create(parent.prototype);
 };
@@ -112,8 +178,8 @@ var screen = null;
 //HTML onLoad event - Loading the game
 $(window).load(function() {
 	canvas = document.getElementById('canvas');
-	canvas.width = 600;
-	canvas.height = 450;
+	canvas.width = 576;
+	canvas.height = 600;
 	//check whether browser supports getting canvas context
 	if (canvas && canvas.getContext) {
 		ctx = canvas.getContext('2d');
@@ -133,7 +199,9 @@ function Game() {
 Game.prototype.start = function() {
 	this.level = new Level(this.currentLevel);
 	this.level.fadeIn();
+	this.inGame = true;
 	screen = new Screen();
+	new Enemy(90,90);
 };
 Game.prototype.end = function() {
 	this.level = null;
@@ -338,12 +406,13 @@ function Level(num) {
 			this.tiles[x][y] = new Tile(x*32,y*32,tmxloader.map.layers[0].data[y][x]);
 		}
 	}
-
-	for (var x=0;x<this.width;x++)
-	{
-		for (var y=0;y<this.height;y++) {
-			switch(tmxloader.map.layers[1].data[y][x] - 32) {
-				case 1: break; //Code to execute for tile 1, etc
+	if (tmxloader.map.layers[1] !== undefined) {
+		for (var x=0;x<this.width;x++)
+		{
+			for (var y=0;y<this.height;y++) {
+				switch(tmxloader.map.layers[1].data[y][x] - 32) {
+					case 1: new Base(x*32,y*32); break; //Code to execute for tile 1, etc
+				}
 			}
 		}
 	}
@@ -405,6 +474,54 @@ function fadeOutLevel() {
 Level.prototype.drawOverlay = function() {
 	ctx.fillStyle = "rgba(0, 0, 0, "+this.overlayAlpha+")";
 	ctx.fillRect(0,0,600,450);
+};//player.js
+
+var player = new Player();
+
+function Player() {
+	entities.push(this);
+	this.x = 0;
+	this.y = 0;
+}
+
+Player.prototype.update = function() {
+};
+
+Player.prototype.render = function() {
+	if (player.x > 300 && player.x + 300 < screen.maxXOffset * -1) screen.xOffset = -(player.x-300);
+	if (player.y > 225 && player.y + 225 < screen.maxYOffset * -1) screen.yOffset = -(player.y-225);
+
+	if (screen.xOffset > 0) screen.xOffset = 0;
+	if (screen.yOffset > 0) screen.yOffset = 0;
+};
+
+
+
+Player.prototype.use = function() {
+	
+};
+
+Player.prototype.move = function(xm,ym) {
+	
+};
+function PlayerSpawn(x,y) {
+	this.x = x;
+	this.y = y;
+	entities.push(this);
+}
+
+PlayerSpawn.prototype.render = function() {
+
+};
+
+PlayerSpawn.prototype.update = function() {
+	if (game.inGame) {
+		if (player instanceof Player) {
+			player.x = this.x+16;
+			player.y = this.y+16;
+		}
+		deleteEntity(this);
+	}
 };//point.js
 
 function Point(x,y) {
@@ -494,14 +611,11 @@ Tile.prototype.setColor = function(color) {
 };
 
 Tile.prototype.render = function() {
-	if (new Point(this.x,this.y).getDist(new Point(player.x,player.y)) < 450) {
-
-		var xOffset = ((this.id - 1) % 4) * 32;
-		var yOffset = Math.floor(((this.id - 1) / 4)) * 32;
-		ctx.fillStyle = this.color;
-		ctx.fillRect(this.x+screen.xOffset,this.y+screen.yOffset,32,32);
-		ctx.drawImage(tileSheet,xOffset,yOffset,32,32,this.x+screen.xOffset,this.y+screen.yOffset,32,32);
-	}
+	var xOffset = ((this.id - 1) % 8) * 32;
+	var yOffset = Math.floor(((this.id - 1) / 8)) * 32;
+	ctx.fillStyle = this.color;
+	ctx.fillRect(this.x+screen.xOffset,this.y+screen.yOffset,32,32);
+	ctx.drawImage(tileSheet,xOffset,yOffset,32,32,this.x+screen.xOffset,this.y+screen.yOffset,32,32);
 };
 
 function isSolidTile(x,y) {
