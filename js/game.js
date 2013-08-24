@@ -39,8 +39,8 @@ Game.prototype.start = function() {
 	this.level.fadeIn();
 	this.inGame = true;
 	screen = new Screen();
-	for (var i=0;i<100;i++) {
-		new Enemy(randomInt(0,500),randomInt(0,500));
+	for (var i=1;i<100;i++) {
+		new Enemy(randomInt(88,500),randomInt(66,500));
 	}
 };
 Game.prototype.end = function() {

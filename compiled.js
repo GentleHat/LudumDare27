@@ -6,11 +6,19 @@ AudioFX=function(){var f="0.4.0";var c=false,e=document.createElement("audio"),a
 }
 
 Base.prototype.render = function() {
-	
+
 };
 
 Base.prototype.update = function() {
 	//Check if colliding with any mobs
+	for (var i=0;i<entities.length;i++) {
+		if (entities[i] instanceof Enemy) {
+			if (this.boundingBox.isColliding(entities[i])) {
+				player.loseLife();
+				entities[i].kill();
+			}
+		}
+	}
 };//boundingbox.js
 
 function BoundingBox(x,y,width,height) {
@@ -97,6 +105,7 @@ function Enemy(x,y) {
 	this.xv = 0;
 	this.yv = 0;
 	this.scale = 1;
+	this.health = 100;
 	entities.push(this);
 }
 
@@ -118,6 +127,7 @@ Enemy.prototype.render = function() {
 };
 
 Enemy.prototype.update = function() {
+
 	var distToNode = new Point(this.x,this.y).getDist(new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y));
 	if (distToNode > 40) {
 		this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
@@ -144,6 +154,15 @@ Enemy.prototype.update = function() {
 	}
 	this.x += this.xv;
 	this.y += this.yv;
+};
+
+Enemy.prototype.kill = function() {
+	entities.clean(this);
+};
+
+Enemy.prototype.takeDamage = function(damage) {
+	this.health -= damage;
+	if (this.health <= 0) this.kill();
 };Function.prototype.inherit = function(parent) {
   this.prototype = Object.create(parent.prototype);
 };
@@ -228,8 +247,8 @@ Game.prototype.start = function() {
 	this.level.fadeIn();
 	this.inGame = true;
 	screen = new Screen();
-	for (var i=0;i<100;i++) {
-		new Enemy(randomInt(0,500),randomInt(0,500));
+	for (var i=1;i<100;i++) {
+		new Enemy(randomInt(88,500),randomInt(66,500));
 	}
 };
 Game.prototype.end = function() {
@@ -440,13 +459,8 @@ function Level(num) {
 		for (var x=0;x<this.width;x++)
 		{
 			for (var y=0;y<this.height;y++) {
-				switch(tmxloader.map.layers[1].data[y][x] - 32) {
-					case 1: this.nodes[1] = new Node(1, x*32,y*32); break;
-					case 2: this.nodes[2] = new Node(2, x*32,y*32); break;
-					case 3: this.nodes[3] = new Node(3, x*32,y*32); break;
-					case 4: this.nodes[4] = new Node(4, x*32,y*32); break;
-					case 5: this.nodes[5] = new Node(5, x*32,y*32); break;
-				}
+				var id = tmxloader.map.layers[1].data[y][x] - 32;
+				if (id < 32) this.nodes[id] = new Node(id,x*32,y*32);
 			}
 		}
 	}
@@ -518,10 +532,10 @@ function Node(id, x, y) {
 var player = new Player();
 
 function Player() {
-	entities.push(this);
 	this.x = 0;
 	this.y = 0;
 	this.selection = null;
+	this.lives = 20;
 }
 
 Player.prototype.update = function() {
@@ -551,6 +565,13 @@ Player.prototype.click = function(x,y) {
 		new Tower(this.selection, x,y);
 	}
 	this.selection = null;
+};
+
+Player.prototype.loseLife = function() {
+	this.lives--;
+	if (this.lives <= 0) {
+		//Game over
+	}
 };//point.js
 
 function Point(x,y) {
@@ -585,6 +606,7 @@ function Projectile(type,x,y,target) {
 	this.img.src = "images/water.png";
 	this.scale = 1;
 	this.speed = 2;
+	this.power = 10;
 	entities.push(this);
 }
 
@@ -602,6 +624,14 @@ Projectile.prototype.render = function() {
 };
 
 Projectile.prototype.update = function() {
+	for (var i=0;i<entities.length;i++) {
+		if (entities[i] instanceof Enemy) {
+			if (this.boundingBox.isColliding(entities[i])) {
+				entities[i].takeDamage(this.power);
+				this.kill();
+			}
+		}
+	}
 
 	this.boundingBox.update(this.x,this.y);
 	if (this.target === null) return;
@@ -635,6 +665,10 @@ Projectile.prototype.update = function() {
 	this.x += this.xv;
 	this.y += this.yv;
 };
+
+Projectile.prototype.kill = function() {
+	entities.clean(this);
+}
 function Screen() {
 	this.xOffset = 0;
 	this.yOffset = 0;

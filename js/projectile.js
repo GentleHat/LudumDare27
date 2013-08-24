@@ -13,6 +13,7 @@ function Projectile(type,x,y,target) {
 	this.img.src = "images/water.png";
 	this.scale = 1;
 	this.speed = 2;
+	this.power = 10;
 	entities.push(this);
 }
 
@@ -30,6 +31,14 @@ Projectile.prototype.render = function() {
 };
 
 Projectile.prototype.update = function() {
+	for (var i=0;i<entities.length;i++) {
+		if (entities[i] instanceof Enemy) {
+			if (this.boundingBox.isColliding(entities[i])) {
+				entities[i].takeDamage(this.power);
+				this.kill();
+			}
+		}
+	}
 
 	this.boundingBox.update(this.x,this.y);
 	if (this.target === null) return;
@@ -63,3 +72,7 @@ Projectile.prototype.update = function() {
 	this.x += this.xv;
 	this.y += this.yv;
 };
+
+Projectile.prototype.kill = function() {
+	entities.clean(this);
+}

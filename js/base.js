@@ -6,9 +6,17 @@ function Base(x,y) {
 }
 
 Base.prototype.render = function() {
-	
+
 };
 
 Base.prototype.update = function() {
 	//Check if colliding with any mobs
+	for (var i=0;i<entities.length;i++) {
+		if (entities[i] instanceof Enemy) {
+			if (this.boundingBox.isColliding(entities[i])) {
+				player.loseLife();
+				entities[i].kill();
+			}
+		}
+	}
 };

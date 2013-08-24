@@ -15,6 +15,7 @@ function Enemy(x,y) {
 	this.xv = 0;
 	this.yv = 0;
 	this.scale = 1;
+	this.health = 100;
 	entities.push(this);
 }
 
@@ -36,6 +37,7 @@ Enemy.prototype.render = function() {
 };
 
 Enemy.prototype.update = function() {
+
 	var distToNode = new Point(this.x,this.y).getDist(new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y));
 	if (distToNode > 40) {
 		this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
@@ -62,4 +64,13 @@ Enemy.prototype.update = function() {
 	}
 	this.x += this.xv;
 	this.y += this.yv;
+};
+
+Enemy.prototype.kill = function() {
+	entities.clean(this);
+};
+
+Enemy.prototype.takeDamage = function(damage) {
+	this.health -= damage;
+	if (this.health <= 0) this.kill();
 };

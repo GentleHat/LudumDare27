@@ -18,8 +18,17 @@ Tower.prototype.render = function() {
 };
 
 Tower.prototype.update = function() {
-	if (getCurrentMs() > this.lastFire + getCurrentMs()) {
-
+	if ((this.lastFire - getCurrentMs()) < -this.fireRate) {
+		var closestEnemy = null;
+		for (var i=0;i<entities.length;i++) {
+			if (entities[i] instanceof Enemy) {
+				if (closestEnemy === null) closestEnemy = entities[i];
+				else if (new Point(this.x,this.y).getDist(new Point(entities[i].x,entities[i].y)) < new Point(this.x,this.y).getDist(new Point(closestEnemy.x,closestEnemy.y))) {
+					closestEnemy = entities[i];
+				}
+			}
+		}
+		new Projectile('water',this.x,this.y,closestEnemy);
 		this.lastFire = getCurrentMs();
 	}
 };

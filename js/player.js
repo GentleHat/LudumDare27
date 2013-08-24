@@ -3,10 +3,10 @@
 var player = new Player();
 
 function Player() {
-	entities.push(this);
 	this.x = 0;
 	this.y = 0;
 	this.selection = null;
+	this.lives = 20;
 }
 
 Player.prototype.update = function() {
@@ -36,4 +36,11 @@ Player.prototype.click = function(x,y) {
 		new Tower(this.selection, x,y);
 	}
 	this.selection = null;
+};
+
+Player.prototype.loseLife = function() {
+	this.lives--;
+	if (this.lives <= 0) {
+		//Game over
+	}
 };
