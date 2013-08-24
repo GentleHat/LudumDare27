@@ -9,7 +9,7 @@ function Enemy(x,y) {
 	this.img = new Image();
 	this.img.src = "images/spider2.png";
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
-	this.target = new Point(randomInt(0,500),randomInt(0,500));
+	this.target = new Point(this.x,this.y);
 	this.speed = 1;
 	this.currentNode = 1;
 	this.xv = 0;
