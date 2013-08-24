@@ -74,7 +74,7 @@ Enemy.prototype.kill = function() {
 			}
 		}
 	}
-	entities.clean(this);
+	deleteEntity(this);
 };
 
 Enemy.prototype.takeDamage = function(damage) {

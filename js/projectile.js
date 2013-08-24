@@ -79,5 +79,5 @@ Projectile.prototype.update = function() {
 };
 
 Projectile.prototype.kill = function() {
-	entities.clean(this);
+	deleteEntity(this);
 };

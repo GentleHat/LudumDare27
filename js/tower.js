@@ -1,7 +1,7 @@
 
 function Tower(type, x,y) {
-	this.x = x;
-	this.y = y;
+	this.x = x+16;
+	this.y = y+16;
 	this.type = "";
 	this.fireRate = 0.5;
 	this.lastFire = 0;
@@ -15,7 +15,7 @@ function Tower(type, x,y) {
 
 Tower.prototype.render = function() {
 	ctx.fillStyle = "#00F";
-	ctx.fillRect(this.x,this.y,32,32);
+	ctx.fillRect(this.x-16,this.y-16,32,32);
 };
 
 Tower.prototype.update = function() {

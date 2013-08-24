@@ -51,7 +51,7 @@ Particle.prototype.update = function() {
 function createWaterParticles(x,y) {
 	var particleCount = randomInt(5,15);
 	while( particleCount-- ) {
-		particles.push( new Particle( x,y,0,180,200,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 ) );
+		new Particle( x,y,0,180,200,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 );
 	}
 }
 

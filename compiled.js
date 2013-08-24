@@ -165,7 +165,7 @@ Enemy.prototype.kill = function() {
 			}
 		}
 	}
-	entities.clean(this);
+	deleteEntity(this);
 };
 
 Enemy.prototype.takeDamage = function(damage) {
@@ -589,7 +589,7 @@ Particle.prototype.update = function() {
 function createWaterParticles(x,y) {
 	var particleCount = randomInt(5,15);
 	while( particleCount-- ) {
-		particles.push( new Particle( x,y,0,180,200,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 ) );
+		new Particle( x,y,0,180,200,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 );
 	}
 }
 
@@ -747,7 +747,7 @@ Projectile.prototype.update = function() {
 };
 
 Projectile.prototype.kill = function() {
-	entities.clean(this);
+	deleteEntity(this);
 };
 function Screen() {
 	this.xOffset = 0;
@@ -1031,8 +1031,8 @@ tmxloader.load = function(url){
 }	
 
 function Tower(type, x,y) {
-	this.x = x;
-	this.y = y;
+	this.x = x+16;
+	this.y = y+16;
 	this.type = "";
 	this.fireRate = 0.5;
 	this.lastFire = 0;
@@ -1046,7 +1046,7 @@ function Tower(type, x,y) {
 
 Tower.prototype.render = function() {
 	ctx.fillStyle = "#00F";
-	ctx.fillRect(this.x,this.y,32,32);
+	ctx.fillRect(this.x-16,this.y-16,32,32);
 };
 
 Tower.prototype.update = function() {
