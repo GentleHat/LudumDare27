@@ -205,9 +205,11 @@ Array.prototype.clean = function(deleteValue) {
 
 
 function getCurrentMs() {
+  return frames / 30;
+  /*
 	var date = new Date();
 	var ms = date.getTime() / 1000;
-	return ms;
+	return ms; */
 }
 
 function degToRad(angle) {
@@ -306,6 +308,7 @@ var now;
 var then = Date.now();
 var interval = 1000/fps;
 var delta;
+var frames = 0;
 
 function loop()
 {
@@ -320,7 +323,7 @@ function loop()
 }
 
 function draw() {
-
+	frames++;
 	if (game.inMenu) {
 		game.mainMenu.render();
 		return; //Don't draw the game if we're not in it yet.
@@ -334,6 +337,16 @@ function draw() {
 		if (entities[i] !== null) {
 			if (!(entities[i] instanceof Player)) entities[i].render();
 			if (game.inGame) entities[i].update();
+		}
+	}
+	if (entities.length > 500) {
+		for (var i=0;i<entities.length;i++) {
+			entities.clean(null);
+		}
+	}
+	if (particles.length > 500) {
+		for (var i=0;i<entities.length;i++) {
+			entities.clean(null);
 		}
 	}
 	renderParticles();
@@ -587,7 +600,7 @@ Particle.prototype.render = function() {
 	ctx.fillStyle = 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + this.alpha + ');';
 
 	ctx.beginPath();
-	ctx.arc(this.x+screen.xOffset,this.y+screen.yOffset, 9, 0, 2 * Math.PI, false);
+	ctx.arc(this.x+screen.xOffset,this.y+screen.yOffset, 3, 0, 2 * Math.PI, false);
 	//ctx.fillRect(this.x+screen.xOffset,this.y+screen.yOffset, 1,1);
 	ctx.fill();
 };
@@ -608,7 +621,7 @@ Particle.prototype.update = function() {
 function createWaterParticles(x,y) {
 	var particleCount = randomInt(5,15);
 	while( particleCount-- ) {
-		new Particle( x,y,0,180,200,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 );
+		new Particle( x,y,0,180,250,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 );
 	}
 }
 
@@ -631,6 +644,7 @@ function Player() {
 	this.y = 0;
 	this.selection = null;
 	this.lives = 20;
+	this.money = 400;
 }
 
 Player.prototype.update = function() {
@@ -656,7 +670,7 @@ Player.prototype.click = function(x,y) {
 	x = x - (x % 32);
 	y = y - (y % 32);
 	if (this.selection !== null) {
-		new Tower(this.selection, x,y);
+		shop.buyTower(this.selection,x,y);
 	}
 	this.selection = null;
 };
@@ -697,10 +711,10 @@ function Projectile(type,x,y,target) {
 	this.target = target;
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
 	this.img = new Image();
-	this.img.src = "images/water.png";
+	this.img.src = "images/" + type.name + ".png";
 	this.scale = 1;
-	this.speed = 2;
-	this.power = 50;
+	this.speed = type.speed;
+	this.power = 10;
 	this.layer = 2;
 	entities.push(this);
 }
@@ -766,7 +780,7 @@ Projectile.prototype.update = function() {
 };
 
 Projectile.prototype.kill = function() {
-	createWaterParticles(this.x,this.y);	
+	createWaterParticles(this.x,this.y);
 	deleteEntity(this);
 };
 function Screen() {
@@ -812,18 +826,52 @@ Screen.prototype.setOffset = function(x,y) {
 	if (y > 0) y = 0;
 	this.xOffset = x;
 	this.yOffset = y;
-};
-$("#shop").append("<div class='tower'><img class='watertower' src='images/water.png'></div>");
+};var shop = new Shop();
 
+function Shop() {
 
-$('.tower').click(function() {
-	player.selection = 'water';
+}
+
+$(window).load(function() {
+	for (var i=0;i<towers.length;i++) {
+		$('#shop').append("<div class='tower'><img class='" + towers[i].name +"' src='images/" + towers[i].name + "_tower.png'></div>");
+	}
+	$('.tower').click(function(event) {
+		var selection = $(this).find('img').attr("class");
+		for (var i=0;i<towers.length;i++) {
+			if (towers[i].name == selection) {
+				player.selection = towers[i];
+				break;
+			}
+		}
+	});
 });
 
-var watertower = {
-	'name': 'Water Tower',
-	'cost': 100
-};//Using audiofx.min.js
+Shop.prototype.buyTower = function(type,x,y) {
+	player.money -= 10;
+	new Tower(type, x, y);
+};
+
+var towers = [
+	{
+		'fullName': "Water Tower",
+		'name': 'water',
+		'cost': 100,
+		'speed': 2,
+		'rate': 0.8
+	},
+	{
+		'fullName': "Newspaper Tower",
+		'name': 'newspaper',
+		'cost': 50
+	},
+	{
+		'fullName': "Shoe Tower",
+		'name': 'shoe',
+		'cost': 200
+	}
+];
+//Using audiofx.min.js
 
 if (AudioFX.supported) {
 	//var shufflesound = AudioFX('sounds/cardshuffle', { formats: ['wav'], pool:2 });
@@ -1053,13 +1101,13 @@ tmxloader.load = function(url){
 function Tower(type, x,y) {
 	this.x = x+16;
 	this.y = y+16;
-	this.type = "";
+	this.type = type;
 	this.fireRate = 0.5;
 	this.lastFire = 0;
 	this.target = null;
 	this.range = 125;
 	this.img = new Image();
-	this.img.src = "";
+	this.img.src = "images/"+ this.type.name + ".png";
 	this.layer = 1;
 	this.target = null;
 	entities.push(this);
@@ -1067,8 +1115,9 @@ function Tower(type, x,y) {
 
 
 Tower.prototype.render = function() {
-	ctx.fillStyle = "#00F";
-	ctx.fillRect(this.x-16,this.y-16,32,32);
+	//ctx.fillStyle = "#00F";
+	//ctx.fillRect(this.x-16,this.y-16,32,32);
+	ctx.drawImage(this.img,this.x-16,this.y-16);
 	if (mouse.x - (mouse.x % 32) == this.x - 16 && mouse.y - (mouse.y % 32) == this.y - 16) {
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, this.range-16, 0, 2 * Math.PI, false);
@@ -1100,17 +1149,16 @@ Tower.prototype.getNewTarget = function() {
 
 Tower.prototype.update = function() {
 	if ((this.lastFire - getCurrentMs()) < -this.fireRate) {
-		console.log(this.target);
 		if (this.target !== null) {
 			if (this.target.health <= 0) {
-				this.getNewTarget(); 
-				return;
-			}
-			else if (new Point(this.x,this.y).getDist(this.target.x,this.target.y) > this.range) {
 				this.getNewTarget();
 				return;
 			}
-			new Projectile('water',this.x,this.y,this.target);
+			if (new Point(this.x,this.y).getDist(new Point(this.target.x,this.target.y)) > this.range) {
+				this.getNewTarget();
+				return;
+			}
+			new Projectile(this.type,this.x,this.y,this.target);
 
 			
 		}

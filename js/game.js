@@ -72,6 +72,7 @@ var now;
 var then = Date.now();
 var interval = 1000/fps;
 var delta;
+var frames = 0;
 
 function loop()
 {
@@ -86,7 +87,7 @@ function loop()
 }
 
 function draw() {
-
+	frames++;
 	if (game.inMenu) {
 		game.mainMenu.render();
 		return; //Don't draw the game if we're not in it yet.
@@ -100,6 +101,16 @@ function draw() {
 		if (entities[i] !== null) {
 			if (!(entities[i] instanceof Player)) entities[i].render();
 			if (game.inGame) entities[i].update();
+		}
+	}
+	if (entities.length > 500) {
+		for (var i=0;i<entities.length;i++) {
+			entities.clean(null);
+		}
+	}
+	if (particles.length > 500) {
+		for (var i=0;i<entities.length;i++) {
+			entities.clean(null);
 		}
 	}
 	renderParticles();

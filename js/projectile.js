@@ -10,10 +10,10 @@ function Projectile(type,x,y,target) {
 	this.target = target;
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
 	this.img = new Image();
-	this.img.src = "images/water.png";
+	this.img.src = "images/" + type.name + ".png";
 	this.scale = 1;
-	this.speed = 2;
-	this.power = 50;
+	this.speed = type.speed;
+	this.power = 10;
 	this.layer = 2;
 	entities.push(this);
 }
@@ -79,6 +79,6 @@ Projectile.prototype.update = function() {
 };
 
 Projectile.prototype.kill = function() {
-	createWaterParticles(this.x,this.y);	
+	createWaterParticles(this.x,this.y);
 	deleteEntity(this);
 };

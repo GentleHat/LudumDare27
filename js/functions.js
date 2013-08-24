@@ -14,9 +14,11 @@ Array.prototype.clean = function(deleteValue) {
 
 
 function getCurrentMs() {
+  return frames / 30;
+  /*
 	var date = new Date();
 	var ms = date.getTime() / 1000;
-	return ms;
+	return ms; */
 }
 
 function degToRad(angle) {

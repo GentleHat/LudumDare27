@@ -7,6 +7,7 @@ function Player() {
 	this.y = 0;
 	this.selection = null;
 	this.lives = 20;
+	this.money = 400;
 }
 
 Player.prototype.update = function() {
@@ -32,7 +33,7 @@ Player.prototype.click = function(x,y) {
 	x = x - (x % 32);
 	y = y - (y % 32);
 	if (this.selection !== null) {
-		new Tower(this.selection, x,y);
+		shop.buyTower(this.selection,x,y);
 	}
 	this.selection = null;
 };

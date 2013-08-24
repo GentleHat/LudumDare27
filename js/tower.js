@@ -2,13 +2,13 @@
 function Tower(type, x,y) {
 	this.x = x+16;
 	this.y = y+16;
-	this.type = "";
+	this.type = type;
 	this.fireRate = 0.5;
 	this.lastFire = 0;
 	this.target = null;
 	this.range = 125;
 	this.img = new Image();
-	this.img.src = "";
+	this.img.src = "images/"+ this.type.name + ".png";
 	this.layer = 1;
 	this.target = null;
 	entities.push(this);
@@ -16,8 +16,9 @@ function Tower(type, x,y) {
 
 
 Tower.prototype.render = function() {
-	ctx.fillStyle = "#00F";
-	ctx.fillRect(this.x-16,this.y-16,32,32);
+	//ctx.fillStyle = "#00F";
+	//ctx.fillRect(this.x-16,this.y-16,32,32);
+	ctx.drawImage(this.img,this.x-16,this.y-16);
 	if (mouse.x - (mouse.x % 32) == this.x - 16 && mouse.y - (mouse.y % 32) == this.y - 16) {
 		ctx.beginPath();
 		ctx.arc(this.x, this.y, this.range-16, 0, 2 * Math.PI, false);
@@ -49,17 +50,16 @@ Tower.prototype.getNewTarget = function() {
 
 Tower.prototype.update = function() {
 	if ((this.lastFire - getCurrentMs()) < -this.fireRate) {
-		console.log(this.target);
 		if (this.target !== null) {
 			if (this.target.health <= 0) {
-				this.getNewTarget(); 
-				return;
-			}
-			else if (new Point(this.x,this.y).getDist(this.target.x,this.target.y) > this.range) {
 				this.getNewTarget();
 				return;
 			}
-			new Projectile('water',this.x,this.y,this.target);
+			if (new Point(this.x,this.y).getDist(new Point(this.target.x,this.target.y)) > this.range) {
+				this.getNewTarget();
+				return;
+			}
+			new Projectile(this.type,this.x,this.y,this.target);
 
 			
 		}

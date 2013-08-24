@@ -1,12 +1,45 @@
+var shop = new Shop();
 
-$("#shop").append("<div class='tower'><img class='watertower' src='images/water.png'></div>");
+function Shop() {
 
+}
 
-$('.tower').click(function() {
-	player.selection = 'water';
+$(window).load(function() {
+	for (var i=0;i<towers.length;i++) {
+		$('#shop').append("<div class='tower'><img class='" + towers[i].name +"' src='images/" + towers[i].name + "_tower.png'></div>");
+	}
+	$('.tower').click(function(event) {
+		var selection = $(this).find('img').attr("class");
+		for (var i=0;i<towers.length;i++) {
+			if (towers[i].name == selection) {
+				player.selection = towers[i];
+				break;
+			}
+		}
+	});
 });
 
-var watertower = {
-	'name': 'Water Tower',
-	'cost': 100
+Shop.prototype.buyTower = function(type,x,y) {
+	player.money -= 10;
+	new Tower(type, x, y);
 };
+
+var towers = [
+	{
+		'fullName': "Water Tower",
+		'name': 'water',
+		'cost': 100,
+		'speed': 2,
+		'rate': 0.8
+	},
+	{
+		'fullName': "Newspaper Tower",
+		'name': 'newspaper',
+		'cost': 50
+	},
+	{
+		'fullName': "Shoe Tower",
+		'name': 'shoe',
+		'cost': 200
+	}
+];

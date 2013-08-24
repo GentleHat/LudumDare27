@@ -30,7 +30,7 @@ Particle.prototype.render = function() {
 	ctx.fillStyle = 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + this.alpha + ');';
 
 	ctx.beginPath();
-	ctx.arc(this.x+screen.xOffset,this.y+screen.yOffset, 9, 0, 2 * Math.PI, false);
+	ctx.arc(this.x+screen.xOffset,this.y+screen.yOffset, 3, 0, 2 * Math.PI, false);
 	//ctx.fillRect(this.x+screen.xOffset,this.y+screen.yOffset, 1,1);
 	ctx.fill();
 };
@@ -51,7 +51,7 @@ Particle.prototype.update = function() {
 function createWaterParticles(x,y) {
 	var particleCount = randomInt(5,15);
 	while( particleCount-- ) {
-		new Particle( x,y,0,180,200,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 );
+		new Particle( x,y,0,180,250,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 );
 	}
 }
 
