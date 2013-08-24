@@ -7,9 +7,9 @@ function Enemy(x,y) {
 	this.type = "spider";
 	this.rotation = 0;
 	this.img = new Image();
-	this.img.src = "images/spider.png";
+	this.img.src = "images/spider2.png";
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
-	this.target = new Point(222,222);
+	this.target = new Point(randomInt(0,500),randomInt(0,500));
 	this.speed = 1;
 	this.xv = 0;
 	this.yv = 0;
@@ -18,18 +18,20 @@ function Enemy(x,y) {
 }
 
 Enemy.prototype.render = function() {
+	setImageSmoothing(true);
 	if (this.target !== null) {
 		this.rotation = Math.atan2(this.y+screen.yOffset-(this.height/2)-this.target.y+screen.yOffset,this.x+screen.xOffset-(this.width/2)-this.target.x+screen.xOffset)*(180 / Math.PI);
 		if(this.rotation < 0) { this.rotation += 360;}
-		this.rotation -= 270;
+		this.rotation -= 90;
+		this.rotation += (Math.random() * 4) - 2;
 	}
 	ctx.save();
 	ctx.translate(this.x+screen.xOffset,this.y+screen.yOffset);
 	ctx.rotate(degToRad(this.rotation));
 	ctx.drawImage(this.img, (-(this.img.width/2)), (-(this.img.height/2)), this.img.width*this.scale,this.img.height*this.scale);
 	ctx.restore();
-	ctx.fillStyle = "#F00";
-	ctx.fillRect(this.x,this.y,5,5);
+	//ctx.fillStyle = "#F00";
+	//ctx.fillRect(this.x,this.y,5,5);
 };
 
 Enemy.prototype.update = function() {
@@ -45,7 +47,7 @@ Enemy.prototype.update = function() {
 		diry /= hyp;
 		this.xv = dirx * this.speed;
 		this.yv = diry * this.speed;
-		if (hyp < 5) {
+		if (hyp < 35) {
 			this.target = null;
 		}
 	}

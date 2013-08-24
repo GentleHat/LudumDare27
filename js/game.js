@@ -39,7 +39,9 @@ Game.prototype.start = function() {
 	this.level.fadeIn();
 	this.inGame = true;
 	screen = new Screen();
-	new Enemy(90,90);
+	for (var i=0;i<100;i++) {
+		new Enemy(randomInt(0,500),randomInt(0,500));
+	}
 };
 Game.prototype.end = function() {
 	this.level = null;
@@ -103,7 +105,7 @@ function draw() {
 			if (game.inGame) entities[i].update();
 		}
 	}
-    //player.render();
+    player.render();
     game.level.drawOverlay();
     ui.draw();
 }

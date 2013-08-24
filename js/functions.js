@@ -26,3 +26,19 @@ function degToRad(angle) {
 function radToDeg(angle) {
   return ((angle*180) / Math.PI);
 }
+
+function setImageSmoothing(setting) {
+  ctx.imageSmoothingEnabled = setting;
+  ctx.webkitImageSmoothingEnabled = setting;
+  ctx.mozImageSmoothingEnabled = setting;
+}
+
+function randomFloat(low, high) {
+  var rand = (Math.random() * high) + low;
+  return rand;
+}
+
+function randomInt(low, high) {
+  var rand = (Math.random() * high) + low;
+  return Math.floor(rand);
+}

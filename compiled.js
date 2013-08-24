@@ -89,9 +89,9 @@ function Enemy(x,y) {
 	this.type = "spider";
 	this.rotation = 0;
 	this.img = new Image();
-	this.img.src = "images/spider.png";
+	this.img.src = "images/spider2.png";
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
-	this.target = new Point(222,222);
+	this.target = new Point(randomInt(0,500),randomInt(0,500));
 	this.speed = 1;
 	this.xv = 0;
 	this.yv = 0;
@@ -100,18 +100,20 @@ function Enemy(x,y) {
 }
 
 Enemy.prototype.render = function() {
+	setImageSmoothing(true);
 	if (this.target !== null) {
 		this.rotation = Math.atan2(this.y+screen.yOffset-(this.height/2)-this.target.y+screen.yOffset,this.x+screen.xOffset-(this.width/2)-this.target.x+screen.xOffset)*(180 / Math.PI);
 		if(this.rotation < 0) { this.rotation += 360;}
-		this.rotation -= 270;
+		this.rotation -= 90;
+		this.rotation += (Math.random() * 4) - 2;
 	}
 	ctx.save();
 	ctx.translate(this.x+screen.xOffset,this.y+screen.yOffset);
 	ctx.rotate(degToRad(this.rotation));
 	ctx.drawImage(this.img, (-(this.img.width/2)), (-(this.img.height/2)), this.img.width*this.scale,this.img.height*this.scale);
 	ctx.restore();
-	ctx.fillStyle = "#F00";
-	ctx.fillRect(this.x,this.y,5,5);
+	//ctx.fillStyle = "#F00";
+	//ctx.fillRect(this.x,this.y,5,5);
 };
 
 Enemy.prototype.update = function() {
@@ -127,7 +129,7 @@ Enemy.prototype.update = function() {
 		diry /= hyp;
 		this.xv = dirx * this.speed;
 		this.yv = diry * this.speed;
-		if (hyp < 5) {
+		if (hyp < 35) {
 			this.target = null;
 		}
 	}
@@ -160,6 +162,22 @@ function degToRad(angle) {
 
 function radToDeg(angle) {
   return ((angle*180) / Math.PI);
+}
+
+function setImageSmoothing(setting) {
+  ctx.imageSmoothingEnabled = setting;
+  ctx.webkitImageSmoothingEnabled = setting;
+  ctx.mozImageSmoothingEnabled = setting;
+}
+
+function randomFloat(low, high) {
+  var rand = (Math.random() * high) + low;
+  return rand;
+}
+
+function randomInt(low, high) {
+  var rand = (Math.random() * high) + low;
+  return Math.floor(rand);
 }
 var canvas = null;
 var ctx = null;
@@ -201,7 +219,9 @@ Game.prototype.start = function() {
 	this.level.fadeIn();
 	this.inGame = true;
 	screen = new Screen();
-	new Enemy(90,90);
+	for (var i=0;i<100;i++) {
+		new Enemy(randomInt(0,500),randomInt(0,500));
+	}
 };
 Game.prototype.end = function() {
 	this.level = null;
@@ -265,7 +285,7 @@ function draw() {
 			if (game.inGame) entities[i].update();
 		}
 	}
-    //player.render();
+    player.render();
     game.level.drawOverlay();
     ui.draw();
 }
@@ -485,24 +505,22 @@ function Player() {
 }
 
 Player.prototype.update = function() {
+
 };
 
 Player.prototype.render = function() {
+
+	ctx.strokeStyle = "#F00";
+	ctx.strokeRect(mouse.x, mouse.y, 32, 32);
+	ctx.stroke();
+	console.log(2)
+
+	//Ignore this code, for screen scrolling games
 	if (player.x > 300 && player.x + 300 < screen.maxXOffset * -1) screen.xOffset = -(player.x-300);
 	if (player.y > 225 && player.y + 225 < screen.maxYOffset * -1) screen.yOffset = -(player.y-225);
 
 	if (screen.xOffset > 0) screen.xOffset = 0;
 	if (screen.yOffset > 0) screen.yOffset = 0;
-};
-
-
-
-Player.prototype.use = function() {
-	
-};
-
-Player.prototype.move = function(xm,ym) {
-	
 };
 function PlayerSpawn(x,y) {
 	this.x = x;
@@ -811,7 +829,31 @@ tmxloader.load = function(url){
 		 } );
 		 
 }	
-var ui = new UI();
+
+function Tower(x,y) {
+	this.x = x;
+	this.y = y;
+	this.type = "";
+	this.fireRate = 0.5;
+	this.lastFire = 0;
+	this.target = null;
+	this.img = new Image();
+	this.img.src = "";
+	entities.push(this);
+}
+
+
+Tower.prototype.render = function() {
+	ctx.fillStyle = "#00F";
+	ctx.fillRect(this.x,this.y,32,32);
+};
+
+Tower.prototype.update = function() {
+	if (getCurrentMs() > lastFire + this.fireRate()) {
+
+		this.lastFire = getCurrentMs();
+	}
+};var ui = new UI();
 
 function UI() {
 
