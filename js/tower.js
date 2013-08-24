@@ -9,6 +9,7 @@ function Tower(type, x,y) {
 	this.range = 300;
 	this.img = new Image();
 	this.img.src = "";
+	this.layer = 1;
 	entities.push(this);
 }
 

@@ -6,7 +6,7 @@ function Projectile(type,x,y,target) {
 	this.xv = 0;
 	this.yv = 0;
 	this.width = 16;
-	this.height = 25;
+	this.height = 16;
 	this.target = target;
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
 	this.img = new Image();
@@ -14,6 +14,7 @@ function Projectile(type,x,y,target) {
 	this.scale = 1;
 	this.speed = 2;
 	this.power = 10;
+	this.layer = 2;
 	entities.push(this);
 }
 
@@ -46,8 +47,8 @@ Projectile.prototype.update = function() {
 		this.kill();
 	}
 	if (this.target instanceof Enemy) { //Guided
-		var dirx = (this.target.x - this.x);
-		var diry =  (this.target.y - this.y);
+		var dirx = (this.target.x - 4 - this.x + this.width/2);
+		var diry =  (this.target.y - 4 - this.y + this.height/2);
 
 		var hyp = Math.sqrt(dirx*dirx + diry*diry);
 		dirx /= hyp;

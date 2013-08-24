@@ -171,6 +171,24 @@ Enemy.prototype.kill = function() {
 Enemy.prototype.takeDamage = function(damage) {
 	this.health -= damage;
 	if (this.health <= 0) this.kill();
+};
+function EnemySpawn(x,y) {
+	this.x = x;
+	this.y = y;
+	this.lastSpawn = 0;
+	this.spawnRate = 5;
+	entities.push(this);
+}
+
+EnemySpawn.prototype.render = function() {
+	//Empty
+};
+
+EnemySpawn.prototype.update = function() {
+	if ((this.lastSpawn - getCurrentMs()) < -this.spawnRate) {
+		new Enemy(this.x,this.y);
+		this.lastSpawn = getCurrentMs();
+	}
 };Function.prototype.inherit = function(parent) {
   this.prototype = Object.create(parent.prototype);
 };
@@ -255,9 +273,6 @@ Game.prototype.start = function() {
 	this.level.fadeIn();
 	this.inGame = true;
 	screen = new Screen();
-	for (var i=1;i<100;i++) {
-		new Enemy(randomInt(88,500),randomInt(66,500));
-	}
 };
 Game.prototype.end = function() {
 	this.level = null;
@@ -469,7 +484,11 @@ function Level(num) {
 		{
 			for (var y=0;y<this.height;y++) {
 				var id = tmxloader.map.layers[1].data[y][x] - 32;
-				if (id < 32) this.nodes[id] = new Node(id,x*32,y*32);
+				if (id <= 8) this.nodes[id] = new Node(id,x*32,y*32);
+				else if (id == 9) new EnemySpawn(x*32+16,y*32-16);
+				else if (id == 10) new EnemySpawn(x*32+32, y*32+16);
+				else if (id == 11) new EnemySpawn(x*32+16, y*32+48);
+				else if (id == 12) new EnemySpawn(x*32-16,y*32+16);
 			}
 		}
 	}
@@ -674,7 +693,7 @@ function Projectile(type,x,y,target) {
 	this.xv = 0;
 	this.yv = 0;
 	this.width = 16;
-	this.height = 25;
+	this.height = 16;
 	this.target = target;
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width,this.height);
 	this.img = new Image();
@@ -682,6 +701,7 @@ function Projectile(type,x,y,target) {
 	this.scale = 1;
 	this.speed = 2;
 	this.power = 10;
+	this.layer = 2;
 	entities.push(this);
 }
 
@@ -714,8 +734,8 @@ Projectile.prototype.update = function() {
 		this.kill();
 	}
 	if (this.target instanceof Enemy) { //Guided
-		var dirx = (this.target.x - this.x);
-		var diry =  (this.target.y - this.y);
+		var dirx = (this.target.x - 4 - this.x + this.width/2);
+		var diry =  (this.target.y - 4 - this.y + this.height/2);
 
 		var hyp = Math.sqrt(dirx*dirx + diry*diry);
 		dirx /= hyp;
@@ -1040,6 +1060,7 @@ function Tower(type, x,y) {
 	this.range = 300;
 	this.img = new Image();
 	this.img.src = "";
+	this.layer = 1;
 	entities.push(this);
 }
 

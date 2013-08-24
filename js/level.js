@@ -28,7 +28,11 @@ function Level(num) {
 		{
 			for (var y=0;y<this.height;y++) {
 				var id = tmxloader.map.layers[1].data[y][x] - 32;
-				if (id < 32) this.nodes[id] = new Node(id,x*32,y*32);
+				if (id <= 8) this.nodes[id] = new Node(id,x*32,y*32);
+				else if (id == 9) new EnemySpawn(x*32+16,y*32-16);
+				else if (id == 10) new EnemySpawn(x*32+32, y*32+16);
+				else if (id == 11) new EnemySpawn(x*32+16, y*32+48);
+				else if (id == 12) new EnemySpawn(x*32-16,y*32+16);
 			}
 		}
 	}
