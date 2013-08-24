@@ -510,10 +510,11 @@ Player.prototype.update = function() {
 
 Player.prototype.render = function() {
 
-	ctx.strokeStyle = "#F00";
-	ctx.strokeRect(mouse.x, mouse.y, 32, 32);
+	ctx.strokeStyle = "#00F";
+	var x = mouse.x - (mouse.x % 32);
+	var y = mouse.y - (mouse.y % 32);
+	ctx.strokeRect(x, y, 32, 32);
 	ctx.stroke();
-	console.log(2)
 
 	//Ignore this code, for screen scrolling games
 	if (player.x > 300 && player.x + 300 < screen.maxXOffset * -1) screen.xOffset = -(player.x-300);
@@ -521,25 +522,6 @@ Player.prototype.render = function() {
 
 	if (screen.xOffset > 0) screen.xOffset = 0;
 	if (screen.yOffset > 0) screen.yOffset = 0;
-};
-function PlayerSpawn(x,y) {
-	this.x = x;
-	this.y = y;
-	entities.push(this);
-}
-
-PlayerSpawn.prototype.render = function() {
-
-};
-
-PlayerSpawn.prototype.update = function() {
-	if (game.inGame) {
-		if (player instanceof Player) {
-			player.x = this.x+16;
-			player.y = this.y+16;
-		}
-		deleteEntity(this);
-	}
 };//point.js
 
 function Point(x,y) {
