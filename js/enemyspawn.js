@@ -3,7 +3,7 @@ function EnemySpawn(x,y) {
 	this.x = x;
 	this.y = y;
 	this.lastSpawn = 0;
-	this.spawnRate = 5;
+	this.spawnRate = 1;
 	entities.push(this);
 }
 

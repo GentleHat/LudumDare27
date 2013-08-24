@@ -39,7 +39,7 @@ Enemy.prototype.render = function() {
 Enemy.prototype.update = function() {
 
 	var distToNode = new Point(this.x,this.y).getDist(new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y));
-	if (distToNode > 40) {
+	if (distToNode > 5) {
 		this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
 	} else {
 		if (game.level.nodes[this.currentNode+1] !== undefined) {

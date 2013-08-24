@@ -13,14 +13,14 @@ function Projectile(type,x,y,target) {
 	this.img.src = "images/water.png";
 	this.scale = 1;
 	this.speed = 2;
-	this.power = 10;
+	this.power = 50;
 	this.layer = 2;
 	entities.push(this);
 }
 
 Projectile.prototype.render = function() {
 	if (this.target !== null) {
-		this.rotation = Math.atan2(this.y+screen.yOffset-(this.height/2)-this.target.y+screen.yOffset,this.x+screen.xOffset-(this.width/2)-this.target.x+screen.xOffset)*(180 / Math.PI);
+		this.rotation = Math.atan2(this.y+screen.yOffset-(this.height/2)-this.target.y+8+screen.yOffset,this.x+screen.xOffset-(this.width/2)-this.target.x+8+screen.xOffset)*(180 / Math.PI);
 		if (this.rotation < 0) { this.rotation += 360;}
 		this.rotation -= 270;
 	}
@@ -37,7 +37,6 @@ Projectile.prototype.update = function() {
 			if (this.boundingBox.isColliding(entities[i])) {
 				entities[i].takeDamage(this.power);
 				this.kill();
-				createWaterParticles(this.x,this.y);
 			}
 		}
 	}
@@ -80,5 +79,6 @@ Projectile.prototype.update = function() {
 };
 
 Projectile.prototype.kill = function() {
+	createWaterParticles(this.x,this.y);	
 	deleteEntity(this);
 };
