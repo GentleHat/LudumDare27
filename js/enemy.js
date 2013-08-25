@@ -75,6 +75,7 @@ Enemy.prototype.kill = function() {
 			}
 		}
 	}
+	score.spidersKilled++;
 	deleteEntity(this);
 };
 

@@ -8,11 +8,8 @@ function Player() {
 	this.selection = null;
 	this.lives = 20;
 	this.money = 400;
-	this.spidersKilled = 0;
-	this.spidersAlive = 0;
-	this.wave = 1;
-	this.waveTime = 10;
-	this.totalTime = 0;
+	this.previewImage = new Image();
+	this.previewImage.src = "images/water_tower.png";
 }
 
 Player.prototype.update = function() {
@@ -26,6 +23,15 @@ Player.prototype.render = function() {
 	var y = mouse.y - (mouse.y % 32);
 	ctx.strokeRect(x, y, 32, 32);
 
+	if (this.selection !== null && this.previewImage.src.length > 3) {
+		//Draw a translucent version of the selected tower so they know what they're placing
+		ctx.save();
+		ctx.globalAlpha = 0.5;
+		this.previewImage.src = "images/"+this.selection.name+"_tower.png";
+		ctx.drawImage(this.previewImage, mouse.x, mouse.y);
+		ctx.restore();
+	}
+
 	//Ignore this code, for screen scrolling games
 	if (player.x > 300 && player.x + 300 < screen.maxXOffset * -1) screen.xOffset = -(player.x-300);
 	if (player.y > 225 && player.y + 225 < screen.maxYOffset * -1) screen.yOffset = -(player.y-225);
@@ -38,9 +44,23 @@ Player.prototype.click = function(x,y) {
 	x = x - (x % 32);
 	y = y - (y % 32);
 	if (this.selection !== null) {
-		shop.buyTower(this.selection,x,y);
+		var canPlace = true;
+		for (var x2=0;x2<game.level.width;x2++) {
+			for (var y2=0;y2<game.level.height;y2++) {
+				if (game.level.tiles[x2][y2].solid) {
+					if (x == x2 * 32) {
+						if (y == y2 * 32) {
+							canPlace = false;
+						}
+					}
+				}
+			}
+		}
+		if (canPlace) {
+			shop.buyTower(this.selection,x,y);
+			this.selection = null;
+		}
 	}
-	this.selection = null;
 };
 
 Player.prototype.loseLife = function() {

@@ -16,6 +16,7 @@ EnemySpawn.prototype.update = function() {
 	if ((this.lastSpawn - getCurrentMs()) < -this.spawnRate) {
 		if (this.toSpawn > 0) {
 			new Enemy(this.x,this.y);
+			score.spidersAlive++;
 			this.lastSpawn = getCurrentMs();
 			this.toSpawn--;
 		}

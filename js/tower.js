@@ -8,7 +8,7 @@ function Tower(type, x,y) {
 	this.target = null;
 	this.range = 125;
 	this.img = new Image();
-	this.img.src = "images/"+ this.type.name + ".png";
+	this.img.src = "images/"+ this.type.name + "_tower.png";
 	this.layer = 1;
 	this.target = null;
 	entities.push(this);
