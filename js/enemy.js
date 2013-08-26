@@ -15,19 +15,19 @@ var enemies = [
 	{
 		'img':"spider3.png",
 		'speed':1.3,
-		'health':200,
+		'health':250,
 		'reward':25
 	},
 	{
 		'img':"spider4.png",
 		'speed':1.1,
-		'health':250,
+		'health':400,
 		'reward':30
 	},
 	{
 		'img':"spider5.png",
 		'speed':0.9,
-		'health':500,
+		'health':750,
 		'reward':100
 	},
 ];

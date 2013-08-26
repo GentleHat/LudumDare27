@@ -33,6 +33,7 @@ $(window).load(function() {
 function Game() {
 	this.level = null;
 	this.currentLevel = 1;
+	this.lost = false;
 }
 Game.prototype.start = function() {
 	this.level = new Level(this.currentLevel);
@@ -65,7 +66,8 @@ Game.prototype.changeLevel = function() {
 Game.prototype.gameOver = function() {
 	this.inGame = false;
 	this.level.fadeOut();
-	setTimeout("game.end();",3000);
+	this.lost = true;
+	//setTimeout("game.end();",3000);
 };
 
 /* Game Loop */

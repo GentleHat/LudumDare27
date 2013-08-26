@@ -107,19 +107,19 @@ var enemies = [
 	{
 		'img':"spider3.png",
 		'speed':1.3,
-		'health':200,
+		'health':250,
 		'reward':25
 	},
 	{
 		'img':"spider4.png",
 		'speed':1.1,
-		'health':250,
+		'health':400,
 		'reward':30
 	},
 	{
 		'img':"spider5.png",
 		'speed':0.9,
-		'health':500,
+		'health':750,
 		'reward':100
 	},
 ];
@@ -315,6 +315,7 @@ $(window).load(function() {
 function Game() {
 	this.level = null;
 	this.currentLevel = 1;
+	this.lost = false;
 }
 Game.prototype.start = function() {
 	this.level = new Level(this.currentLevel);
@@ -347,7 +348,8 @@ Game.prototype.changeLevel = function() {
 Game.prototype.gameOver = function() {
 	this.inGame = false;
 	this.level.fadeOut();
-	setTimeout("game.end();",3000);
+	this.lost = true;
+	//setTimeout("game.end();",3000);
 };
 
 /* Game Loop */
@@ -1467,6 +1469,9 @@ UI.prototype.draw = function() {
 
 	ctx.font = 'normal 20pt Calibri';
 	ctx.fillStyle = "#FFF";
+	if (game.lost) {
+		ctx.fillText("Game Over",285,220);
+	}
 
 };
 
