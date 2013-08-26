@@ -12,8 +12,9 @@ function Score() {
 	this.lastUpdate = 0;
 }
 
-Score.prototype.startWave = function() {
+Score.prototype.startNextWave = function() {
 	this.currentWave++;
+	this.building = false;
 	for (var i=0;i<entities.length;i++) {
 		if (entities[i] instanceof EnemySpawn) {
 			entities[i].toSpawn = 10 * (this.currentWave * 0.5);
@@ -34,7 +35,7 @@ Score.prototype.update = function() {
 	if ((this.lastUpdate - getCurrentMs()) < -1) { //Updates once per second
 		if (this.building) {
 			this.buildTime--;
-			if (this.buildTime <= 0) this.building = false;
+			if (this.buildTime <= 0) this.startNextWave();
 		}
 		else {
 			for (var i=0;i<entities.length;i++) {
@@ -45,6 +46,7 @@ Score.prototype.update = function() {
 				}
 			}
 		}
+		this.lastUpdate = getCurrentMs();
 	}
 };
 

@@ -27,7 +27,7 @@ function Level(num) {
 		for (var x=0;x<this.width;x++)
 		{
 			for (var y=0;y<this.height;y++) {
-				var id = tmxloader.map.layers[1].data[y][x] - 32;
+				var id = tmxloader.map.layers[1].data[y][x] - 64; //Subtract offset (how many tiles are in tilesheet.png)
 				if (id <= 8) this.nodes[id] = new Node(id,x*32,y*32);
 				else if (id == 9) new EnemySpawn(x*32+16,y*32-16);
 				else if (id == 10) new EnemySpawn(x*32+48, y*32+16);
