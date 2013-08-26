@@ -41,9 +41,10 @@ Game.prototype.start = function() {
 	screen = new Screen();
 };
 Game.prototype.end = function() {
-	this.level = null;
+	this.level = new Level(this.currentLevel);
 	entities = [];
 	player = new Player(); //Has to be after clearing entities as we're putting the player in there!
+	score = new Score();
 	ui = new UI();
 };
 Game.prototype.changeLevel = function() {
@@ -59,6 +60,7 @@ Game.prototype.changeLevel = function() {
 	screen = new Screen();
 	this.inGame = true;
 	this.level.fadeIn();
+	score.startNextWave();
 };
 Game.prototype.gameOver = function() {
 	this.inGame = false;
@@ -108,9 +110,9 @@ function draw() {
 			entities.clean(null);
 		}
 	}
-	if (particles.length > 500) {
-		for (var i=0;i<entities.length;i++) {
-			entities.clean(null);
+	if (particles.length > 300) {
+		for (var i=0;i<particles.length;i++) {
+			particles.clean(null);
 		}
 	}
 	renderParticles();

@@ -8,13 +8,15 @@ function Shop() {
 
 $(window).load(function() {
 	for (var i=0;i<towers.length;i++) {
-		$('#shop').append("<div class='tower'><img class='" + towers[i].name +"' src='images/" + towers[i].name + "_tower.png'></div>");
+		$('#shop').append("<div class='tower'><img class='" + towers[i].name +"' src='images/" + towers[i].name + "_tower.png'>$"+towers[i].cost+"</div>");
 	}
 	$('.tower').mousedown(function(event) {
 		var selection = $(this).find('img').attr("class");
 		for (var i=0;i<towers.length;i++) {
 			if (towers[i].name == selection) {
-				player.selection = towers[i];
+				if (player.money >= towers[i].cost) {
+					player.selection = towers[i];
+				}
 				break;
 			}
 		}
@@ -41,7 +43,7 @@ var towers = [
 	{
 		'fullName': "Grass Tower",
 		'name': 'grass',
-		'cost': 25,
+		'cost': 100,
 		'speed':3.5,
 		'rate':0.8,
 		'power':20,
@@ -50,7 +52,7 @@ var towers = [
 	{
 		'fullName': "Stone Tower",
 		'name': 'stone',
-		'cost': 50,
+		'cost': 125,
 		'speed':4,
 		'rate':1.2,
 		'power':30,
@@ -59,7 +61,7 @@ var towers = [
 	{
 		'fullName': "Water Tower",
 		'name': 'water',
-		'cost': 100,
+		'cost': 125,
 		'speed': 2,
 		'rate': 0.65,
 		'power':15,
@@ -77,7 +79,7 @@ var towers = [
 	{
 		'fullName': "Gasoline Tower",
 		'name': 'gasoline',
-		'cost': 150,
+		'cost': 250,
 		'speed':2,
 		'rate':3,
 		'power':0,

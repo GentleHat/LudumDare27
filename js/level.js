@@ -33,6 +33,7 @@ function Level(num) {
 				else if (id == 10) new EnemySpawn(x*32+48, y*32+16);
 				else if (id == 11) new EnemySpawn(x*32+16, y*32+48);
 				else if (id == 12) new EnemySpawn(x*32-16,y*32+16);
+				else if (id == 17) new Base(x*32,y*32);
 			}
 		}
 	}

@@ -86,6 +86,7 @@ function createGasolineParticles(x,y) {
 
 function renderParticles() {
 	for (var i=0;i<particles.length;i++) {
+		if (particles[i] === null) continue;
 		particles[i].render();
 		particles[i].update();
 	}
@@ -94,7 +95,7 @@ function renderParticles() {
 function deleteParticle(p) {
 	for (var i=0;i<particles.length;i++) {
 		if (particles[i] == p) {
-			particles.splice(i, 1);
+			particles[i] = null;
 			break;
 		}
 	}

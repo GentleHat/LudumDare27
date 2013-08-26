@@ -1,7 +1,7 @@
 AudioFX=function(){var f="0.4.0";var c=false,e=document.createElement("audio"),a=function(j){var i=e.canPlayType(j);return(i==="probably")||(i==="maybe")};if(e&&e.canPlayType){c={ogg:a('audio/ogg; codecs="vorbis"'),mp3:a("audio/mpeg;"),m4a:a("audio/x-m4a;")||a("audio/aac;"),wav:a('audio/wav; codecs="1"'),loop:(typeof e.loop==="boolean")}}var d=function(m,i,l){var k=document.createElement("audio");if(l){var j=function(){k.removeEventListener("canplay",j,false);l()};k.addEventListener("canplay",j,false)}if(i.loop&&!c.loop){k.addEventListener("ended",function(){k.currentTime=0;k.play()},false)}k.volume=i.volume||0.1;k.autoplay=i.autoplay;k.loop=i.loop;k.src=m;return k};var h=function(i){for(var j=0;j<i.length;j++){if(c&&c[i[j]]){return i[j]}}};var g=function(i){var k,j;for(k=0;k<i.length;k++){j=i[k];if(j.paused||j.ended){return j}}};var b=function(o,j,m){j=j||{};var i=j.formats||[],l=h(i),k=[];o=o+(l?"."+l:"");if(c){for(var p=0;p<(j.pool||1);p++){k.push(d(o,j,p==0?m:null))}}else{m()}return{audio:(k.length==1?k[0]:k),play:function(){var n=g(k);if(n){n.play()}},stop:function(){var r,q;for(r=0;r<k.length;r++){q=k[r];q.pause();q.currentTime=0}}}};b.version=f;b.supported=c;return b}();function Base(x,y) {
 	this.x = x;
 	this.y = y;
-	this.boundingBox = new BoundingBox(this.x,this.y,32,32);
+	this.boundingBox = new BoundingBox(this.x-32,this.y-32,32,32);
 	entities.push(this);
 }
 
@@ -15,7 +15,8 @@ Base.prototype.update = function() {
 		if (entities[i] instanceof Enemy) {
 			if (this.boundingBox.isColliding(entities[i])) {
 				player.loseLife();
-				entities[i].kill();
+				new TextParticle(player.lives, this.x,this.y);
+				deleteEntity(entities[i]);
 			}
 		}
 	}
@@ -93,33 +94,54 @@ BoundingBox.prototype.destroy = function() {
 var enemies = [
 	{
 		'img':"spider1.png",
-		'speed':1,
-		'health':100,
+		'speed':1.3,
+		'health':75,
+		'reward':5
+	},
+	{
+		'img':'spider2.png',
+		'speed':1.1,
+		'health':125,
 		'reward':10
 	},
 	{
-
-	}
+		'img':"spider3.png",
+		'speed':1.2,
+		'health':150,
+		'reward':25
+	},
+	{
+		'img':"spider4.png",
+		'speed':1,
+		'health':200,
+		'reward':30
+	},
+	{
+		'img':"spider5.png",
+		'speed':0.9,
+		'health':500,
+		'reward':100
+	},
 ];
 
-function Enemy(x,y) {
+function Enemy(type,x,y) {
 	this.x = x;
 	this.y = y;
 	this.width = 32;
 	this.height = 32;
-	this.type = "spider";
+	this.type = type;
 	this.rotation = 0;
 	this.img = new Image();
-	this.img.src = "images/spider5.png";
+	this.img.src = "images/" + type.img;
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width/2,this.height/2);
 	this.target = null;
-	this.speed = 1;
+	this.speed = type.speed;
 	this.currentNode = 1;
 	this.xv = 0;
 	this.yv = 0;
 	this.scale = 1;
-	this.health = 100;
-	this.reward = 10;
+	this.health = type.health;
+	this.reward = type.reward;
 	entities.push(this);
 }
 
@@ -193,8 +215,8 @@ function EnemySpawn(x,y) {
 	this.x = x;
 	this.y = y;
 	this.lastSpawn = 0;
-	this.spawnRate = 1;
-	this.toSpawn = 10;
+	this.spawnRate = 0;
+	this.toSpawn = 0;
 	this.enemyType = null;
 	entities.push(this);
 }
@@ -205,8 +227,9 @@ EnemySpawn.prototype.render = function() {
 
 EnemySpawn.prototype.update = function() {
 	if ((this.lastSpawn - getCurrentMs()) < -this.spawnRate) {
+
 		if (this.toSpawn > 0) {
-			new Enemy(this.x,this.y);
+			new Enemy(this.enemyType,this.x,this.y);
 			score.spidersAlive++;
 			this.lastSpawn = getCurrentMs();
 			this.toSpawn--;
@@ -300,9 +323,10 @@ Game.prototype.start = function() {
 	screen = new Screen();
 };
 Game.prototype.end = function() {
-	this.level = null;
+	this.level = new Level(this.currentLevel);
 	entities = [];
 	player = new Player(); //Has to be after clearing entities as we're putting the player in there!
+	score = new Score();
 	ui = new UI();
 };
 Game.prototype.changeLevel = function() {
@@ -318,6 +342,7 @@ Game.prototype.changeLevel = function() {
 	screen = new Screen();
 	this.inGame = true;
 	this.level.fadeIn();
+	score.startNextWave();
 };
 Game.prototype.gameOver = function() {
 	this.inGame = false;
@@ -367,9 +392,9 @@ function draw() {
 			entities.clean(null);
 		}
 	}
-	if (particles.length > 500) {
-		for (var i=0;i<entities.length;i++) {
-			entities.clean(null);
+	if (particles.length > 300) {
+		for (var i=0;i<particles.length;i++) {
+			particles.clean(null);
 		}
 	}
 	renderParticles();
@@ -526,6 +551,7 @@ function Level(num) {
 				else if (id == 10) new EnemySpawn(x*32+48, y*32+16);
 				else if (id == 11) new EnemySpawn(x*32+16, y*32+48);
 				else if (id == 12) new EnemySpawn(x*32-16,y*32+16);
+				else if (id == 17) new Base(x*32,y*32);
 			}
 		}
 	}
@@ -680,6 +706,7 @@ function createGasolineParticles(x,y) {
 
 function renderParticles() {
 	for (var i=0;i<particles.length;i++) {
+		if (particles[i] === null) continue;
 		particles[i].render();
 		particles[i].update();
 	}
@@ -688,7 +715,7 @@ function renderParticles() {
 function deleteParticle(p) {
 	for (var i=0;i<particles.length;i++) {
 		if (particles[i] == p) {
-			particles.splice(i, 1);
+			particles[i] = null;
 			break;
 		}
 	}
@@ -794,7 +821,7 @@ Player.prototype.click = function(x,y) {
 Player.prototype.loseLife = function() {
 	this.lives--;
 	if (this.lives <= 0) {
-		//Game over
+		game.gameOver();
 	}
 };//point.js
 
@@ -908,21 +935,63 @@ var score = new Score();
 function Score() {
 	this.spidersKilled = 0;
 	this.spidersAlive = 0;
-	this.currentWave = 1;
+	this.currentWave = 0;
 	this.waveTime = 10;
 	this.buildTime = 0;
 	this.building = false;
 	this.totalTime = 0;
 	this.lastUpdate = 0;
+	this.difficulty = 1;
 }
 
 Score.prototype.startNextWave = function() {
 	this.currentWave++;
 	this.building = false;
+
 	for (var i=0;i<entities.length;i++) {
 		if (entities[i] instanceof EnemySpawn) {
-			entities[i].toSpawn = 10 * (this.currentWave * 0.5);
+			var enemyToSpawn = 1;
+			var wave = this.currentWave % 12;
+			if (this.currentWave > 12) wave++;
+			if (wave <= 3) enemyToSpawn = 1;
+			else if (wave <= 6) enemyToSpawn = 2;
+			else if (wave <= 8) enemyToSpawn = 3;
+			else if (wave <= 10) enemyToSpawn = 4;
+			else if (wave <= 12) enemyToSpawn = 5;
+			else if (wave >= 13) {
+				this.increaseDifficulty();
+				enemyToSpawn = 1;
+			}
+			entities[i].enemyType = enemies[enemyToSpawn - 1];
+			var spawnAmount = 10;
+			var spawnRate = 1;
+			switch (wave) {
+				case 1: spawnAmount = 10; spawnRate = 1; break;
+				case 2: spawnAmount = 20; spawnRate = 0.9; break;
+				case 3: spawnAmount = 25; spawnRate = 0.8; break;
+				case 4: spawnAmount = 10; spawnRate = 1; break;
+				case 5: spawnAmount = 15; spawnRate = 1; break;
+				case 6: spawnAmount = 20; spawnRate = 1; break;
+				case 7: spawnAmount = 10; spawnRate = 1.1; break;
+				case 8: spawnAmount = 12; spawnRate = 1.1; break;
+				case 9: spawnAmount = 10; spawnRate = 1.2; break;
+				case 10: spawnAmount = 15; spawnRate = 1.2; break;
+				case 11: spawnAmount = 12; spawnRate = 1.4; break;
+				case 12: spawnAmount = 15; spawnRate = 1.4; break;
+				case 13: spawnAmount = 5; spawnRate = 2; break;
+			}
+			entities[i].toSpawn = spawnAmount;
+			entities[i].spawnRate = spawnRate;
 		}
+	}
+};
+
+Score.prototype.increaseDifficulty = function() {
+	this.difficulty++;
+	for (var i=0;i<enemies.length;i++) {
+		enemies[i].speed *= 1.25;
+		enemies[i].health *= 2.5;
+		enemies[i].reward = Math.floor(entities[i].reward * 0.8);
 	}
 };
 
@@ -1008,13 +1077,15 @@ function Shop() {
 
 $(window).load(function() {
 	for (var i=0;i<towers.length;i++) {
-		$('#shop').append("<div class='tower'><img class='" + towers[i].name +"' src='images/" + towers[i].name + "_tower.png'></div>");
+		$('#shop').append("<div class='tower'><img class='" + towers[i].name +"' src='images/" + towers[i].name + "_tower.png'>$"+towers[i].cost+"</div>");
 	}
 	$('.tower').mousedown(function(event) {
 		var selection = $(this).find('img').attr("class");
 		for (var i=0;i<towers.length;i++) {
 			if (towers[i].name == selection) {
-				player.selection = towers[i];
+				if (player.money >= towers[i].cost) {
+					player.selection = towers[i];
+				}
 				break;
 			}
 		}
@@ -1041,7 +1112,7 @@ var towers = [
 	{
 		'fullName': "Grass Tower",
 		'name': 'grass',
-		'cost': 25,
+		'cost': 100,
 		'speed':3.5,
 		'rate':0.8,
 		'power':20,
@@ -1050,7 +1121,7 @@ var towers = [
 	{
 		'fullName': "Stone Tower",
 		'name': 'stone',
-		'cost': 50,
+		'cost': 125,
 		'speed':4,
 		'rate':1.2,
 		'power':30,
@@ -1059,7 +1130,7 @@ var towers = [
 	{
 		'fullName': "Water Tower",
 		'name': 'water',
-		'cost': 100,
+		'cost': 125,
 		'speed': 2,
 		'rate': 0.65,
 		'power':15,
@@ -1077,7 +1148,7 @@ var towers = [
 	{
 		'fullName': "Gasoline Tower",
 		'name': 'gasoline',
-		'cost': 150,
+		'cost': 250,
 		'speed':2,
 		'rate':3,
 		'power':0,

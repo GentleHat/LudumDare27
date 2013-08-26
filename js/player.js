@@ -78,6 +78,6 @@ Player.prototype.click = function(x,y) {
 Player.prototype.loseLife = function() {
 	this.lives--;
 	if (this.lives <= 0) {
-		//Game over
+		game.gameOver();
 	}
 };

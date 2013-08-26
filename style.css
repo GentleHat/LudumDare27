@@ -3,6 +3,7 @@
 
 body {
 	background-color: #333;
+	font-family: 'Open Sans', sans-serif;
 }
 
 #game
@@ -37,7 +38,8 @@ canvas {
 	background: #333;
 	text-align: center;
 	border: 2px inset #666;
-	float: left;
+	float: right;
+	color: white;
 }
 
 .tower:active{
@@ -46,9 +48,10 @@ canvas {
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
 #scoreboard {
 	color: #0F0;
-	float: right;
+	float: left;
+	padding: 10px;
 	width: 100px;
 	height: 50px;
 	font-size: 20px;
-font-family: 'Open Sans', sans-serif;
+
 }

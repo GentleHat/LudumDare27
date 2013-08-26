@@ -2,33 +2,54 @@
 var enemies = [
 	{
 		'img':"spider1.png",
-		'speed':1,
-		'health':100,
+		'speed':1.3,
+		'health':75,
+		'reward':5
+	},
+	{
+		'img':'spider2.png',
+		'speed':1.1,
+		'health':125,
 		'reward':10
 	},
 	{
-
-	}
+		'img':"spider3.png",
+		'speed':1.2,
+		'health':150,
+		'reward':25
+	},
+	{
+		'img':"spider4.png",
+		'speed':1,
+		'health':200,
+		'reward':30
+	},
+	{
+		'img':"spider5.png",
+		'speed':0.9,
+		'health':500,
+		'reward':100
+	},
 ];
 
-function Enemy(x,y) {
+function Enemy(type,x,y) {
 	this.x = x;
 	this.y = y;
 	this.width = 32;
 	this.height = 32;
-	this.type = "spider";
+	this.type = type;
 	this.rotation = 0;
 	this.img = new Image();
-	this.img.src = "images/spider5.png";
+	this.img.src = "images/" + type.img;
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width/2,this.height/2);
 	this.target = null;
-	this.speed = 1;
+	this.speed = type.speed;
 	this.currentNode = 1;
 	this.xv = 0;
 	this.yv = 0;
 	this.scale = 1;
-	this.health = 100;
-	this.reward = 10;
+	this.health = type.health;
+	this.reward = type.reward;
 	entities.push(this);
 }
 
