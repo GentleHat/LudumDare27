@@ -3,20 +3,20 @@ var enemies = [
 	{
 		'img':"spider1.png",
 		'speed':1.3,
-		'health':75,
+		'health':80,
 		'reward':5
 	},
 	{
 		'img':'spider2.png',
-		'speed':1.1,
-		'health':150,
+		'speed':1.15,
+		'health':1705,
 		'reward':10
 	},
 	{
 		'img':"spider3.png",
 		'speed':1.3,
-		'health':250,
-		'reward':25
+		'health':265,
+		'reward':20
 	},
 	{
 		'img':"spider4.png",
@@ -56,10 +56,7 @@ function Enemy(type,x,y) {
 Enemy.prototype.render = function() {
 	setImageSmoothing(true);
 	if (this.target !== null) {
-		this.rotation = Math.atan2(this.y+screen.yOffset-(this.height/2)-this.target.y+screen.yOffset,this.x+screen.xOffset-(this.width/2)-this.target.x+screen.xOffset)*(180 / Math.PI);
-		if(this.rotation < 0) { this.rotation += 360;}
-		this.rotation -= 90;
-		this.rotation += (Math.random() * 4) - 2;
+
 	}
 	ctx.save();
 	ctx.translate(this.x+screen.xOffset,this.y+screen.yOffset);
@@ -71,9 +68,15 @@ Enemy.prototype.render = function() {
 };
 
 Enemy.prototype.update = function() {
-	if (this.target === null) this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
+	if (this.target === null) {
+		this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
+		this.rotation = Math.atan2(this.y+screen.yOffset-(this.height/2)-this.target.y+screen.yOffset,this.x+screen.xOffset-(this.width/2)-this.target.x+screen.xOffset)*(180 / Math.PI);
+		if(this.rotation < 0) { this.rotation += 360;}
+		this.rotation -= 90;
+		this.rotation += (Math.random() * 4) - 2;
+	}
 	var distToNode = new Point(this.x,this.y).getDist(new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y));
-	if (distToNode < 20) {
+	if (distToNode < 1) {
 		//this.target = new Point(game.level.nodes[this.currentNode].x+randomInt(-50,50),game.level.nodes[this.currentNode].y+randomInt(-50,50));
 		
 		if (game.level.nodes[this.currentNode+1] !== undefined) {
@@ -111,6 +114,7 @@ Enemy.prototype.kill = function() {
 	}
 	score.spidersKilled++;
 	player.money += this.reward;
+	moneysound.play();
 	new TextParticle("+"+this.reward, this.x,this.y);
 	deleteEntity(this);
 };
@@ -118,4 +122,5 @@ Enemy.prototype.kill = function() {
 Enemy.prototype.takeDamage = function(damage) {
 	this.health -= damage;
 	if (this.health <= 0) this.kill();
+	hitsound.play();
 };

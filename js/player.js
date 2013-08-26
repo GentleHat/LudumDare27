@@ -77,6 +77,7 @@ Player.prototype.click = function(x,y) {
 
 Player.prototype.loseLife = function() {
 	this.lives--;
+	loselifesound.play();
 	if (this.lives <= 0) {
 		game.gameOver();
 	}

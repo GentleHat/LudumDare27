@@ -30,6 +30,7 @@ Shop.prototype.buyTower = function(type,x,y) {
 	if (player.money >= type.cost) {
 		player.money -= type.cost;
 		new Tower(type, x, y);
+		buildsound.play();
 	}
 	this.updateScore();
 };
@@ -49,7 +50,7 @@ var towers = [
 		'cost': 100,
 		'speed':3.5,
 		'rate':0.8,
-		'power':20,
+		'power':15,
 		'range':200
 	},
 	{
@@ -58,7 +59,7 @@ var towers = [
 		'cost': 125,
 		'speed':4,
 		'rate':1.2,
-		'power':30,
+		'power':35,
 		'range':150,
 	},
 	{
@@ -85,7 +86,7 @@ var towers = [
 		'cost': 250,
 		'speed':2,
 		'rate':3,
-		'power':0,
+		'power':50,
 		'range':300
 	}
 ];

@@ -60,7 +60,7 @@ Tower.prototype.update = function() {
 				return;
 			}
 			new Projectile(this.type,this.x,this.y,this.target);
-
+			firesound.play();
 			
 		}
 		else {

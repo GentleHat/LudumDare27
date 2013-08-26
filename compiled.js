@@ -95,20 +95,20 @@ var enemies = [
 	{
 		'img':"spider1.png",
 		'speed':1.3,
-		'health':75,
+		'health':80,
 		'reward':5
 	},
 	{
 		'img':'spider2.png',
-		'speed':1.1,
-		'health':150,
+		'speed':1.15,
+		'health':1705,
 		'reward':10
 	},
 	{
 		'img':"spider3.png",
 		'speed':1.3,
-		'health':250,
-		'reward':25
+		'health':265,
+		'reward':20
 	},
 	{
 		'img':"spider4.png",
@@ -148,10 +148,7 @@ function Enemy(type,x,y) {
 Enemy.prototype.render = function() {
 	setImageSmoothing(true);
 	if (this.target !== null) {
-		this.rotation = Math.atan2(this.y+screen.yOffset-(this.height/2)-this.target.y+screen.yOffset,this.x+screen.xOffset-(this.width/2)-this.target.x+screen.xOffset)*(180 / Math.PI);
-		if(this.rotation < 0) { this.rotation += 360;}
-		this.rotation -= 90;
-		this.rotation += (Math.random() * 4) - 2;
+
 	}
 	ctx.save();
 	ctx.translate(this.x+screen.xOffset,this.y+screen.yOffset);
@@ -163,9 +160,15 @@ Enemy.prototype.render = function() {
 };
 
 Enemy.prototype.update = function() {
-	if (this.target === null) this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
+	if (this.target === null) {
+		this.target = new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y);
+		this.rotation = Math.atan2(this.y+screen.yOffset-(this.height/2)-this.target.y+screen.yOffset,this.x+screen.xOffset-(this.width/2)-this.target.x+screen.xOffset)*(180 / Math.PI);
+		if(this.rotation < 0) { this.rotation += 360;}
+		this.rotation -= 90;
+		this.rotation += (Math.random() * 4) - 2;
+	}
 	var distToNode = new Point(this.x,this.y).getDist(new Point(game.level.nodes[this.currentNode].x,game.level.nodes[this.currentNode].y));
-	if (distToNode < 20) {
+	if (distToNode < 1) {
 		//this.target = new Point(game.level.nodes[this.currentNode].x+randomInt(-50,50),game.level.nodes[this.currentNode].y+randomInt(-50,50));
 		
 		if (game.level.nodes[this.currentNode+1] !== undefined) {
@@ -203,6 +206,7 @@ Enemy.prototype.kill = function() {
 	}
 	score.spidersKilled++;
 	player.money += this.reward;
+	moneysound.play();
 	new TextParticle("+"+this.reward, this.x,this.y);
 	deleteEntity(this);
 };
@@ -210,6 +214,7 @@ Enemy.prototype.kill = function() {
 Enemy.prototype.takeDamage = function(damage) {
 	this.health -= damage;
 	if (this.health <= 0) this.kill();
+	hitsound.play();
 };
 function EnemySpawn(x,y) {
 	this.x = x;
@@ -549,7 +554,7 @@ function Level(num) {
 			for (var y=0;y<this.height;y++) {
 				var id = tmxloader.map.layers[1].data[y][x] - 64; //Subtract offset (how many tiles are in tilesheet.png)
 				if (id <= 8) this.nodes[id] = new Node(id,x*32,y*32);
-				else if (id == 9) new EnemySpawn(x*32+16,y*32-16);
+				else if (id == 9) new EnemySpawn(x*32,y*32-16);
 				else if (id == 10) new EnemySpawn(x*32+48, y*32+16);
 				else if (id == 11) new EnemySpawn(x*32+16, y*32+48);
 				else if (id == 12) new EnemySpawn(x*32-16,y*32+16);
@@ -822,6 +827,7 @@ Player.prototype.click = function(x,y) {
 
 Player.prototype.loseLife = function() {
 	this.lives--;
+	loselifesound.play();
 	if (this.lives <= 0) {
 		game.gameOver();
 	}
@@ -949,7 +955,7 @@ function Score() {
 Score.prototype.startNextWave = function() {
 	this.currentWave++;
 	this.building = false;
-
+	wavesound.play();
 	for (var i=0;i<entities.length;i++) {
 		if (entities[i] instanceof EnemySpawn) {
 			var enemyToSpawn = 1;
@@ -1102,6 +1108,7 @@ Shop.prototype.buyTower = function(type,x,y) {
 	if (player.money >= type.cost) {
 		player.money -= type.cost;
 		new Tower(type, x, y);
+		buildsound.play();
 	}
 	this.updateScore();
 };
@@ -1121,7 +1128,7 @@ var towers = [
 		'cost': 100,
 		'speed':3.5,
 		'rate':0.8,
-		'power':20,
+		'power':15,
 		'range':200
 	},
 	{
@@ -1130,7 +1137,7 @@ var towers = [
 		'cost': 125,
 		'speed':4,
 		'rate':1.2,
-		'power':30,
+		'power':35,
 		'range':150,
 	},
 	{
@@ -1157,7 +1164,7 @@ var towers = [
 		'cost': 250,
 		'speed':2,
 		'rate':3,
-		'power':0,
+		'power':50,
 		'range':300
 	}
 ];
@@ -1165,7 +1172,13 @@ var towers = [
 
 if (AudioFX.supported) {
 	//var shufflesound = AudioFX('sounds/cardshuffle', { formats: ['wav'], pool:2 });
-	var sound = AudioFX('sounds/soundfilename', { formats: ['wav'], pool:8, volume:0.3});
+	var buildsound = AudioFX('sounds/build', { formats: ['wav'], pool:3, volume:0.6});
+	var moneysound = AudioFX('sounds/money', { formats: ['wav'], pool:7, volume:0.6});
+	var hitsound = AudioFX('sounds/hit', { formats: ['wav'], pool:10, volume:0.5});
+	var loselifesound = AudioFX('sounds/loselife', { formats: ['wav'], pool:5, volume:0.6});
+	var firesound = AudioFX('sounds/fire', { formats: ['wav'], pool: 10, volume: 0.2});
+	var wavesound = AudioFX('sounds/wave', { formats: ['wav'], pool: 2, volume: 0.3});
+
 }
 //tile.js
 
@@ -1449,7 +1462,7 @@ Tower.prototype.update = function() {
 				return;
 			}
 			new Projectile(this.type,this.x,this.y,this.target);
-
+			firesound.play();
 			
 		}
 		else {

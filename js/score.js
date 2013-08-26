@@ -16,7 +16,7 @@ function Score() {
 Score.prototype.startNextWave = function() {
 	this.currentWave++;
 	this.building = false;
-
+	wavesound.play();
 	for (var i=0;i<entities.length;i++) {
 		if (entities[i] instanceof EnemySpawn) {
 			var enemyToSpawn = 1;
