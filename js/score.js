@@ -80,6 +80,7 @@ Score.prototype.update = function() {
 			if (this.buildTime <= 0) this.startNextWave();
 		}
 		else {
+			this.buildTime = "Now";
 			for (var i=0;i<entities.length;i++) {
 				if (entities[i] instanceof EnemySpawn) {
 					if (entities[i].toSpawn <= 0) {

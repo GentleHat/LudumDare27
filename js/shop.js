@@ -7,8 +7,9 @@ function Shop() {
 
 
 $(window).load(function() {
+	$('#shop').append("<div id='towers'></div>");
 	for (var i=0;i<towers.length;i++) {
-		$('#shop').append("<div class='tower'><img class='" + towers[i].name +"' src='images/" + towers[i].name + "_tower.png'>$"+towers[i].cost+"</div>");
+		$('#towers').prepend("<div class='tower'><img class='" + towers[i].name +"' src='images/" + towers[i].name + "_tower.png'>$"+towers[i].cost+"</div>");
 	}
 	$('.tower').mousedown(function(event) {
 		var selection = $(this).find('img').attr("class");
@@ -21,7 +22,7 @@ $(window).load(function() {
 			}
 		}
 	});
-	$("#shop").append("<div id='scoreboard'></div>");
+	$("#shop").prepend("<div id='scoreboard'></div>");
 	setInterval("shop.updateScore();", 500);
 });
 
@@ -34,9 +35,11 @@ Shop.prototype.buyTower = function(type,x,y) {
 };
 
 Shop.prototype.updateScore = function() {
-	$("#scoreboard").text("Money: $"+player.money);
-	$("#scoreboard").append("Next Wave in: " +score.buildTime);
-	$("#scoreboard").append("Wave: "+score.currentWave);
+	$("#scoreboard").html("");
+	$("#scoreboard").append("Money: <u class='pull-right'>$"+player.money+"</u>");
+	$("#scoreboard").append("<br>Next Wave: <u class='pull-right'>" +score.buildTime+"</u>");
+	$("#scoreboard").append("<br>Wave #: <u class='pull-right'>"+score.currentWave+"</u>");
+	$("#scoreboard").append("<br>Kills: <u class='pull-right'>"+score.spidersKilled+"</u>");
 };
 
 var towers = [

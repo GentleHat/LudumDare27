@@ -101,19 +101,19 @@ var enemies = [
 	{
 		'img':'spider2.png',
 		'speed':1.1,
-		'health':125,
+		'health':150,
 		'reward':10
 	},
 	{
 		'img':"spider3.png",
-		'speed':1.2,
-		'health':150,
+		'speed':1.3,
+		'health':200,
 		'reward':25
 	},
 	{
 		'img':"spider4.png",
-		'speed':1,
-		'health':200,
+		'speed':1.1,
+		'health':250,
 		'reward':30
 	},
 	{
@@ -1011,6 +1011,7 @@ Score.prototype.update = function() {
 			if (this.buildTime <= 0) this.startNextWave();
 		}
 		else {
+			this.buildTime = "Now";
 			for (var i=0;i<entities.length;i++) {
 				if (entities[i] instanceof EnemySpawn) {
 					if (entities[i].toSpawn <= 0) {
@@ -1076,8 +1077,9 @@ function Shop() {
 
 
 $(window).load(function() {
+	$('#shop').append("<div id='towers'></div>");
 	for (var i=0;i<towers.length;i++) {
-		$('#shop').append("<div class='tower'><img class='" + towers[i].name +"' src='images/" + towers[i].name + "_tower.png'>$"+towers[i].cost+"</div>");
+		$('#towers').prepend("<div class='tower'><img class='" + towers[i].name +"' src='images/" + towers[i].name + "_tower.png'>$"+towers[i].cost+"</div>");
 	}
 	$('.tower').mousedown(function(event) {
 		var selection = $(this).find('img').attr("class");
@@ -1090,7 +1092,7 @@ $(window).load(function() {
 			}
 		}
 	});
-	$("#shop").append("<div id='scoreboard'></div>");
+	$("#shop").prepend("<div id='scoreboard'></div>");
 	setInterval("shop.updateScore();", 500);
 });
 
@@ -1103,9 +1105,11 @@ Shop.prototype.buyTower = function(type,x,y) {
 };
 
 Shop.prototype.updateScore = function() {
-	$("#scoreboard").text("Money: $"+player.money);
-	$("#scoreboard").append("Next Wave in: " +score.buildTime);
-	$("#scoreboard").append("Wave: "+score.currentWave);
+	$("#scoreboard").html("");
+	$("#scoreboard").append("Money: <u class='pull-right'>$"+player.money+"</u>");
+	$("#scoreboard").append("<br>Next Wave: <u class='pull-right'>" +score.buildTime+"</u>");
+	$("#scoreboard").append("<br>Wave #: <u class='pull-right'>"+score.currentWave+"</u>");
+	$("#scoreboard").append("<br>Kills: <u class='pull-right'>"+score.spidersKilled+"</u>");
 };
 
 var towers = [
