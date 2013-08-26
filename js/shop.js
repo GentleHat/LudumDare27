@@ -77,8 +77,8 @@ var towers = [
 		'name': 'fire',
 		'cost': 150,
 		'speed':2.5,
-		'rate':1.5,
-		'power':60,
+		'rate':1.3,
+		'power':70,
 		'range':125
 	},
 	{

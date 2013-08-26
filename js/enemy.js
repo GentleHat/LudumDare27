@@ -9,7 +9,7 @@ var enemies = [
 	{
 		'img':'spider2.png',
 		'speed':1.15,
-		'health':1705,
+		'health':170,
 		'reward':10
 	},
 	{
@@ -113,7 +113,7 @@ Enemy.prototype.kill = function() {
 		}
 	}
 	score.spidersKilled++;
-	player.money += this.reward;
+	player.money += Math.floor(this.reward);
 	moneysound.play();
 	new TextParticle("+"+this.reward, this.x,this.y);
 	deleteEntity(this);

@@ -17,6 +17,7 @@ Score.prototype.startNextWave = function() {
 	this.currentWave++;
 	this.building = false;
 	wavesound.play();
+	if (Math.floor(this.currentWave / 12)+1 !== this.difficulty) this.increaseDifficulty();
 	for (var i=0;i<entities.length;i++) {
 		if (entities[i] instanceof EnemySpawn) {
 			var enemyToSpawn = 1;
@@ -59,8 +60,8 @@ Score.prototype.increaseDifficulty = function() {
 	this.difficulty++;
 	for (var i=0;i<enemies.length;i++) {
 		enemies[i].speed *= 1.25;
-		enemies[i].health *= 2.5;
-		enemies[i].reward = Math.floor(entities[i].reward * 0.8);
+		enemies[i].health *= 5;
+		enemies[i].reward *= 0.8;
 	}
 };
 
