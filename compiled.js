@@ -1119,6 +1119,7 @@ Shop.prototype.updateScore = function() {
 	$("#scoreboard").append("<br>Next Wave: <u class='pull-right'>" +score.buildTime+"</u>");
 	$("#scoreboard").append("<br>Wave #: <u class='pull-right'>"+score.currentWave+"</u>");
 	$("#scoreboard").append("<br>Kills: <u class='pull-right'>"+score.spidersKilled+"</u>");
+	$("#scoreboard").append("<br>Lives: <u class='pull-right'>"+player.lives+"</u>");
 };
 
 var towers = [
