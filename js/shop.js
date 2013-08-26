@@ -32,6 +32,7 @@ Shop.prototype.buyTower = function(type,x,y) {
 
 Shop.prototype.updateScore = function() {
 	$("#scoreboard").text("Money: $"+player.money);
+	$("#scoreboard").append("Building: " +score.building);
 };
 
 var towers = [
@@ -58,5 +59,29 @@ var towers = [
 		'speed':1,
 		'rate':2,
 		'power':80
+	},
+	{
+		'fullName': "Fire Tower",
+		'name': 'fire',
+		'cost': 150,
+		'speed':1,
+		'rate':1.5,
+		'power':60
+	},
+	{
+		'fullName': "Gasoline Tower",
+		'name': 'gasoline',
+		'cost': 150,
+		'speed':1,
+		'rate':1.5,
+		'power':60
+	},
+	{
+		'fullName': "Stone Tower",
+		'name': 'stone',
+		'cost': 50,
+		'speed':1,
+		'rate':1.2,
+		'power':30
 	}
 ];

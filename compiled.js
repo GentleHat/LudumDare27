@@ -180,6 +180,7 @@ function EnemySpawn(x,y) {
 	this.lastSpawn = 0;
 	this.spawnRate = 1;
 	this.toSpawn = 10;
+	this.enemyType = null;
 	entities.push(this);
 }
 
@@ -357,6 +358,7 @@ function draw() {
 		}
 	}
 	renderParticles();
+	score.update();
     player.render();
     game.level.drawOverlay();
     ui.draw();
@@ -700,6 +702,13 @@ Player.prototype.click = function(x,y) {
 				}
 			}
 		}
+		for (var i=0;i<entities.length;i++) {
+			if (entities[i] instanceof Tower) {
+				if (entities[i].x - 16 == x && entities[i].y - 16 == y) {
+					canPlace = false;
+				}
+			}
+		}
 		if (canPlace) {
 			shop.buyTower(this.selection,x,y);
 			this.selection = null;
@@ -823,12 +832,48 @@ function Score() {
 	this.currentWave = 1;
 	this.waveTime = 10;
 	this.buildTime = 0;
+	this.building = false;
 	this.totalTime = 0;
+	this.lastUpdate = 0;
 }
 
 Score.prototype.startWave = function() {
+	this.currentWave++;
+	for (var i=0;i<entities.length;i++) {
+		if (entities[i] instanceof EnemySpawn) {
+			entities[i].toSpawn = 10 * (this.currentWave * 0.5);
+		}
+	}
+};
+
+Score.prototype.waveEnd = function() {
 
 };
+
+Score.prototype.startBuildTime = function() {
+	this.buildTime = 10;
+	this.building = true;
+};
+
+Score.prototype.update = function() {
+	if ((this.lastUpdate - getCurrentMs()) < -1) { //Updates once per second
+		if (this.building) {
+			this.buildTime--;
+			if (this.buildTime <= 0) this.building = false;
+		}
+		else {
+			for (var i=0;i<entities.length;i++) {
+				if (entities[i] instanceof EnemySpawn) {
+					if (entities[i].toSpawn <= 0) {
+						this.startBuildTime();
+					}
+				}
+			}
+		}
+	}
+};
+
+
 function Screen() {
 	this.xOffset = 0;
 	this.yOffset = 0;
@@ -906,6 +951,7 @@ Shop.prototype.buyTower = function(type,x,y) {
 
 Shop.prototype.updateScore = function() {
 	$("#scoreboard").text("Money: $"+player.money);
+	$("#scoreboard").append("Building: " +score.building);
 };
 
 var towers = [
@@ -932,6 +978,30 @@ var towers = [
 		'speed':1,
 		'rate':2,
 		'power':80
+	},
+	{
+		'fullName': "Fire Tower",
+		'name': 'fire',
+		'cost': 150,
+		'speed':1,
+		'rate':1.5,
+		'power':60
+	},
+	{
+		'fullName': "Gasoline Tower",
+		'name': 'gasoline',
+		'cost': 150,
+		'speed':1,
+		'rate':1.5,
+		'power':60
+	},
+	{
+		'fullName': "Stone Tower",
+		'name': 'stone',
+		'cost': 50,
+		'speed':1,
+		'rate':1.2,
+		'power':30
 	}
 ];
 //Using audiofx.min.js
@@ -952,7 +1022,7 @@ function Tile(x, y, id) {
 	this.id = id;
 	this.boundingBox = new BoundingBox(this.x,this.y,32,32);
 	this.color = '#060';
-	if (this.id != 1) this.solid = true;
+	if (this.id != 10) this.solid = true;
 }
 
 Tile.prototype.setColor = function(color) {

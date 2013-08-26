@@ -114,6 +114,7 @@ function draw() {
 		}
 	}
 	renderParticles();
+	score.update();
     player.render();
     game.level.drawOverlay();
     ui.draw();

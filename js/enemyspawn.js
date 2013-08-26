@@ -5,6 +5,7 @@ function EnemySpawn(x,y) {
 	this.lastSpawn = 0;
 	this.spawnRate = 1;
 	this.toSpawn = 10;
+	this.enemyType = null;
 	entities.push(this);
 }
 

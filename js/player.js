@@ -56,6 +56,13 @@ Player.prototype.click = function(x,y) {
 				}
 			}
 		}
+		for (var i=0;i<entities.length;i++) {
+			if (entities[i] instanceof Tower) {
+				if (entities[i].x - 16 == x && entities[i].y - 16 == y) {
+					canPlace = false;
+				}
+			}
+		}
 		if (canPlace) {
 			shop.buyTower(this.selection,x,y);
 			this.selection = null;
