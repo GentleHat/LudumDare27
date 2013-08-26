@@ -76,6 +76,6 @@ var towers = [
 		'cost': 150,
 		'speed':2,
 		'rate':1.5,
-		'power':60
+		'power':0
 	}
 ];

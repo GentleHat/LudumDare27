@@ -79,6 +79,10 @@ Projectile.prototype.update = function() {
 };
 
 Projectile.prototype.kill = function() {
-	createWaterParticles(this.x,this.y);
+	if (this.type.name == "water") createWaterParticles(this.x,this.y);
+	else if (this.type.name == "fire") createFireParticles(this.x,this.y);
+	else if (this.type.name == "grass") createGrassParticles(this.x,this.y);
+	else if (this.type.name == "stone") createStoneParticles(this.x,this.y);
+	else if (this.type.name == "gasoline") createGasolineParticles(this.x,this.y);
 	deleteEntity(this);
 };
