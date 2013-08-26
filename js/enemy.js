@@ -1,4 +1,16 @@
 
+var enemies = [
+	{
+		'img':"spider1.png",
+		'speed':1,
+		'health':100,
+		'reward':10
+	},
+	{
+
+	}
+];
+
 function Enemy(x,y) {
 	this.x = x;
 	this.y = y;
@@ -7,7 +19,7 @@ function Enemy(x,y) {
 	this.type = "spider";
 	this.rotation = 0;
 	this.img = new Image();
-	this.img.src = "images/spider2.png";
+	this.img.src = "images/spider5.png";
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width/2,this.height/2);
 	this.target = null;
 	this.speed = 1;
@@ -16,6 +28,7 @@ function Enemy(x,y) {
 	this.yv = 0;
 	this.scale = 1;
 	this.health = 100;
+	this.reward = 10;
 	entities.push(this);
 }
 
@@ -76,6 +89,8 @@ Enemy.prototype.kill = function() {
 		}
 	}
 	score.spidersKilled++;
+	player.money += this.reward;
+	new TextParticle("+"+this.reward, this.x,this.y);
 	deleteEntity(this);
 };
 

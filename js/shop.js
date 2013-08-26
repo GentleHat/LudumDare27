@@ -43,8 +43,9 @@ var towers = [
 		'name': 'grass',
 		'cost': 25,
 		'speed':3.5,
-		'rate':1.5,
-		'power':20
+		'rate':0.8,
+		'power':20,
+		'range':200
 	},
 	{
 		'fullName': "Stone Tower",
@@ -52,15 +53,17 @@ var towers = [
 		'cost': 50,
 		'speed':4,
 		'rate':1.2,
-		'power':30
+		'power':30,
+		'range':150,
 	},
 	{
 		'fullName': "Water Tower",
 		'name': 'water',
 		'cost': 100,
 		'speed': 2,
-		'rate': 0.8,
-		'power':15
+		'rate': 0.65,
+		'power':15,
+		'range':150
 	},
 	{
 		'fullName': "Fire Tower",
@@ -68,14 +71,16 @@ var towers = [
 		'cost': 150,
 		'speed':2.5,
 		'rate':1.5,
-		'power':60
+		'power':60,
+		'range':125
 	},
 	{
 		'fullName': "Gasoline Tower",
 		'name': 'gasoline',
 		'cost': 150,
 		'speed':2,
-		'rate':1.5,
-		'power':0
+		'rate':3,
+		'power':0,
+		'range':300
 	}
 ];

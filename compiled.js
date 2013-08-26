@@ -90,6 +90,18 @@ BoundingBox.prototype.destroy = function() {
 	this.width = 0;
 	this.height = 0;
 };
+var enemies = [
+	{
+		'img':"spider1.png",
+		'speed':1,
+		'health':100,
+		'reward':10
+	},
+	{
+
+	}
+];
+
 function Enemy(x,y) {
 	this.x = x;
 	this.y = y;
@@ -98,7 +110,7 @@ function Enemy(x,y) {
 	this.type = "spider";
 	this.rotation = 0;
 	this.img = new Image();
-	this.img.src = "images/spider2.png";
+	this.img.src = "images/spider5.png";
 	this.boundingBox = new BoundingBox(this.x,this.y,this.width/2,this.height/2);
 	this.target = null;
 	this.speed = 1;
@@ -107,6 +119,7 @@ function Enemy(x,y) {
 	this.yv = 0;
 	this.scale = 1;
 	this.health = 100;
+	this.reward = 10;
 	entities.push(this);
 }
 
@@ -167,6 +180,8 @@ Enemy.prototype.kill = function() {
 		}
 	}
 	score.spidersKilled++;
+	player.money += this.reward;
+	new TextParticle("+"+this.reward, this.x,this.y);
 	deleteEntity(this);
 };
 
@@ -629,7 +644,7 @@ Particle.prototype.update = function() {
 };
 
 function createWaterParticles(x,y) {
-	var particleCount = randomInt(7,16);
+	var particleCount = randomInt(6,15);
 	while( particleCount-- ) {
 		new Particle( x,y,2,0,180,250,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 );
 	}
@@ -671,8 +686,34 @@ function renderParticles() {
 }
 
 function deleteParticle(p) {
-	particles.clean(p);
+	for (var i=0;i<particles.length;i++) {
+		if (particles[i] == p) {
+			particles.splice(i, 1);
+			break;
+		}
+	}
 }
+
+function TextParticle(str, x, y) {
+	this.str = str;
+	this.x = x;
+	this.y = y;
+	this.decay = 0.8;
+	this.alpha = 1;
+	particles.push(this);
+}
+
+TextParticle.prototype.render = function() {
+	ctx.font = 'normal 10pt Calibri';
+	ctx.fillStyle = 'rgba(' + 0 + ',' + 255 + ',' + 0 + ',' + this.alpha + ');';
+	ctx.fillText(this.str, this.x, this.y);
+};
+
+TextParticle.prototype.update = function() {
+	this.y -= 1;
+	this.alpha *= this.decay;
+	if (this.alpha < 0.2) deleteParticle(this);
+};
 //player.js
 
 var player = new Player();
@@ -693,7 +734,7 @@ Player.prototype.update = function() {
 
 Player.prototype.render = function() {
 
-	ctx.strokeStyle = "#00F";
+	ctx.strokeStyle = "#0F0";
 	var x = mouse.x - (mouse.x % 32);
 	var y = mouse.y - (mouse.y % 32);
 	ctx.strokeRect(x, y, 32, 32);
@@ -703,9 +744,14 @@ Player.prototype.render = function() {
 		ctx.save();
 		ctx.globalAlpha = 0.5;
 		this.previewImage.src = "images/"+this.selection.name+"_tower.png";
-		ctx.drawImage(this.previewImage, mouse.x, mouse.y);
+		ctx.drawImage(this.previewImage, mouse.x - (mouse.x % 32), mouse.y - (mouse.y % 32));
 		ctx.restore();
+
+		ctx.beginPath();
+		ctx.arc(mouse.x - (mouse.x % 32) + 16, mouse.y - (mouse.y % 32) + 16, this.selection.range-15, 0, 2 * Math.PI, false);
+		ctx.stroke();
 	}
+
 
 	//Ignore this code, for screen scrolling games
 	if (player.x > 300 && player.x + 300 < screen.maxXOffset * -1) screen.xOffset = -(player.x-300);
@@ -997,8 +1043,9 @@ var towers = [
 		'name': 'grass',
 		'cost': 25,
 		'speed':3.5,
-		'rate':1.5,
-		'power':20
+		'rate':0.8,
+		'power':20,
+		'range':200
 	},
 	{
 		'fullName': "Stone Tower",
@@ -1006,15 +1053,17 @@ var towers = [
 		'cost': 50,
 		'speed':4,
 		'rate':1.2,
-		'power':30
+		'power':30,
+		'range':150,
 	},
 	{
 		'fullName': "Water Tower",
 		'name': 'water',
 		'cost': 100,
 		'speed': 2,
-		'rate': 0.8,
-		'power':15
+		'rate': 0.65,
+		'power':15,
+		'range':150
 	},
 	{
 		'fullName': "Fire Tower",
@@ -1022,15 +1071,17 @@ var towers = [
 		'cost': 150,
 		'speed':2.5,
 		'rate':1.5,
-		'power':60
+		'power':60,
+		'range':125
 	},
 	{
 		'fullName': "Gasoline Tower",
 		'name': 'gasoline',
 		'cost': 150,
 		'speed':2,
-		'rate':1.5,
-		'power':0
+		'rate':3,
+		'power':0,
+		'range':300
 	}
 ];
 //Using audiofx.min.js
@@ -1267,7 +1318,7 @@ function Tower(type, x,y) {
 	this.fireRate = type.rate;
 	this.lastFire = 0;
 	this.target = null;
-	this.range = 125;
+	this.range = type.range;
 	this.img = new Image();
 	this.img.src = "images/"+ this.type.name + "_tower.png";
 	this.layer = 1;

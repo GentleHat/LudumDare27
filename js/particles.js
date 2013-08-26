@@ -50,7 +50,7 @@ Particle.prototype.update = function() {
 };
 
 function createWaterParticles(x,y) {
-	var particleCount = randomInt(7,16);
+	var particleCount = randomInt(6,15);
 	while( particleCount-- ) {
 		new Particle( x,y,2,0,180,250,randomFloat(0, Math.PI * 2),randomFloat(0.3,2.5),0.8,0.9, 0.9, 30 );
 	}
@@ -92,5 +92,31 @@ function renderParticles() {
 }
 
 function deleteParticle(p) {
-	particles.clean(p);
+	for (var i=0;i<particles.length;i++) {
+		if (particles[i] == p) {
+			particles.splice(i, 1);
+			break;
+		}
+	}
 }
+
+function TextParticle(str, x, y) {
+	this.str = str;
+	this.x = x;
+	this.y = y;
+	this.decay = 0.8;
+	this.alpha = 1;
+	particles.push(this);
+}
+
+TextParticle.prototype.render = function() {
+	ctx.font = 'normal 10pt Calibri';
+	ctx.fillStyle = 'rgba(' + 0 + ',' + 255 + ',' + 0 + ',' + this.alpha + ');';
+	ctx.fillText(this.str, this.x, this.y);
+};
+
+TextParticle.prototype.update = function() {
+	this.y -= 1;
+	this.alpha *= this.decay;
+	if (this.alpha < 0.2) deleteParticle(this);
+};

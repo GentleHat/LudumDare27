@@ -6,7 +6,7 @@ function Tower(type, x,y) {
 	this.fireRate = type.rate;
 	this.lastFire = 0;
 	this.target = null;
-	this.range = 125;
+	this.range = type.range;
 	this.img = new Image();
 	this.img.src = "images/"+ this.type.name + "_tower.png";
 	this.layer = 1;

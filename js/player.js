@@ -18,7 +18,7 @@ Player.prototype.update = function() {
 
 Player.prototype.render = function() {
 
-	ctx.strokeStyle = "#00F";
+	ctx.strokeStyle = "#0F0";
 	var x = mouse.x - (mouse.x % 32);
 	var y = mouse.y - (mouse.y % 32);
 	ctx.strokeRect(x, y, 32, 32);
@@ -28,9 +28,14 @@ Player.prototype.render = function() {
 		ctx.save();
 		ctx.globalAlpha = 0.5;
 		this.previewImage.src = "images/"+this.selection.name+"_tower.png";
-		ctx.drawImage(this.previewImage, mouse.x, mouse.y);
+		ctx.drawImage(this.previewImage, mouse.x - (mouse.x % 32), mouse.y - (mouse.y % 32));
 		ctx.restore();
+
+		ctx.beginPath();
+		ctx.arc(mouse.x - (mouse.x % 32) + 16, mouse.y - (mouse.y % 32) + 16, this.selection.range-15, 0, 2 * Math.PI, false);
+		ctx.stroke();
 	}
+
 
 	//Ignore this code, for screen scrolling games
 	if (player.x > 300 && player.x + 300 < screen.maxXOffset * -1) screen.xOffset = -(player.x-300);
