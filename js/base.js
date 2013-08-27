@@ -16,7 +16,7 @@ Base.prototype.update = function() {
 			if (this.boundingBox.isColliding(entities[i])) {
 				player.loseLife();
 				new TextParticle(player.lives, this.x,this.y);
-				deleteEntity(entities[i]);
+				entities[i].killNoReward();
 			}
 		}
 	}

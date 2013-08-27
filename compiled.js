@@ -16,7 +16,7 @@ Base.prototype.update = function() {
 			if (this.boundingBox.isColliding(entities[i])) {
 				player.loseLife();
 				new TextParticle(player.lives, this.x,this.y);
-				deleteEntity(entities[i]);
+				entities[i].killNoReward();
 			}
 		}
 	}
@@ -211,6 +211,19 @@ Enemy.prototype.kill = function() {
 	deleteEntity(this);
 };
 
+Enemy.prototype.killNoReward = function() {
+	for (var i=0;i<entities.length;i++) {
+		if (entities[i] instanceof Projectile) {
+			if (entities[i].target == this) {
+				entities[i].target = new Point(this.x,this.y);
+			}
+		}
+	}
+	this.x = -9999;
+	this.y = -9999;
+	deleteEntity(this);
+};
+
 Enemy.prototype.takeDamage = function(damage) {
 	this.health -= damage;
 	if (this.health <= 0) this.kill();
@@ -354,6 +367,7 @@ Game.prototype.gameOver = function() {
 	this.inGame = false;
 	this.level.fadeOut();
 	this.lost = true;
+	score.building = false;
 	//setTimeout("game.end();",3000);
 };
 

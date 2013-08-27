@@ -67,6 +67,7 @@ Game.prototype.gameOver = function() {
 	this.inGame = false;
 	this.level.fadeOut();
 	this.lost = true;
+	score.building = false;
 	//setTimeout("game.end();",3000);
 };
 
